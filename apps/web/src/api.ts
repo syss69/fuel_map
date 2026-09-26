@@ -41,7 +41,7 @@ async function getJson<T>(path: string): Promise<T> {
   return (await response.json()) as T;
 }
 
-export function fetchStations(): Promise<{ stations: StationMarker[] }> {
+export function fetchStations(): Promise<{ stations: StationMarker[]; updatedAt: string | null }> {
   return getJson('/stations');
 }
 

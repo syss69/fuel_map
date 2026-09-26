@@ -28,7 +28,7 @@ export default function App() {
   const markersRef = useRef<Marker[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [fuelFilter, setFuelFilter] = useState<FuelCode | ''>('');
-  const stations = useQuery({ queryKey: ['stations'], queryFn: fetchStations });
+  const stations = useQuery({ queryKey: ['stations'], queryFn: fetchStations, refetchInterval: 60_000 });
   const visibleStations = useMemo(() => (stations.data?.stations ?? []).filter(
     (station) => !fuelFilter || station.availableFuels.includes(fuelFilter),
   ), [stations.data, fuelFilter]);
@@ -61,10 +61,12 @@ export default function App() {
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = visibleStations.map((station) => {
       const element = document.createElement('button');
-      element.className = 'station-marker';
+      const hasFuel = station.availableFuels.length > 0;
+      const availabilityLabel = hasFuel ? 'Carburant disponible' : 'Aucun carburant déclaré disponible';
+      element.className = `station-marker${hasFuel ? ' station-marker-available' : ''}`;
       element.type = 'button';
-      element.title = station.displayName;
-      element.setAttribute('aria-label', `Afficher ${station.displayName}`);
+      element.title = `${station.displayName} — ${availabilityLabel}`;
+      element.setAttribute('aria-label', `Afficher ${station.displayName} — ${availabilityLabel}`);
       element.addEventListener('click', () => setSelectedId(station.id));
       return new maplibregl.Marker({ element })
         .setLngLat([station.lng, station.lat])
@@ -107,6 +109,18 @@ export default function App() {
           {fuelFilter && visibleStations.length === 0
             ? 'Aucune station avec ce carburant disponible'
             : `${visibleStations.length} stations affichées`}
+          <small className="last-update" title="Dernière synchronisation réussie avec la source des données">
+            {stations.data.updatedAt ? <>
+              Données synchronisées le{' '}
+              <time dateTime={stations.data.updatedAt}>
+                {new Intl.DateTimeFormat('fr-FR', {
+                  day: '2-digit', month: '2-digit', year: 'numeric',
+                  hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris',
+                }).format(new Date(stations.data.updatedAt))}
+              </time>
+              {' (Paris)'}
+            </> : 'Aucune synchronisation réussie'}
+          </small>
         </div>
       )}
       {selectedId && <StationCard stationId={selectedId} onClose={() => setSelectedId(null)} />}

@@ -80,6 +80,12 @@ button { font: inherit; }
   outline: none;
 }
 
+.station-marker-available { background: #176b51; }
+.station-marker-available:hover, .station-marker-available:focus-visible {
+  background: #10533e;
+  box-shadow: 0 0 0 4px rgba(23, 107, 81, 0.25), 0 2px 8px rgba(44, 40, 28, 0.35);
+}
+
 .map-message, .station-count {
   position: absolute;
   left: 18px;
@@ -92,6 +98,8 @@ button { font: inherit; }
   font-size: 13px;
 }
 .map-message.error { color: #8b2e24; border-left: 4px solid #c54a37; }
+.station-count { max-width: calc(100vw - 36px); }
+.last-update { display: block; margin-top: 4px; color: #64766f; font-size: 11px; line-height: 1.4; }
 
 .station-card {
   position: absolute;
@@ -129,6 +137,7 @@ button { font: inherit; }
 .fuel-row { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid #e3e8e2; }
 .fuel-row span { color: #52665f; }
 .fuel-row strong { color: #18382f; font-variant-numeric: tabular-nums; }
+.fuel-row strong.fuel-status { color: #64766f; font-size: 13px; text-align: right; overflow-wrap: anywhere; }
 .fuel-row strong.unavailable { color: #b14d38; font-size: 13px; }
 .card-status { margin: 20px 0; color: #52665f; }
 .card-status.error { color: #9b3528; }

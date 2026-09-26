@@ -7,10 +7,11 @@ interface Props {
 }
 
 function displayPrice(availability: Availability, price: number | null): string {
-  if (availability === 'TEMPORARILY_UNAVAILABLE' || availability === 'UNAVAILABLE') {
-    return 'Indisponible';
-  }
-  if (availability !== 'AVAILABLE' || price == null) return '—';
+  if (availability === 'PERMANENTLY_UNAVAILABLE') return 'Non distribué';
+  if (availability === 'TEMPORARILY_UNAVAILABLE') return 'Temporairement indisponible';
+  if (availability === 'UNAVAILABLE') return 'Indisponible';
+  if (availability === 'UNKNOWN') return 'Disponibilité inconnue';
+  if (price == null) return 'Prix non renseigné';
   return `${(price / 1_000).toFixed(3)} €/L`;
 }
 
@@ -38,7 +39,11 @@ export function StationCard({ stationId, onClose }: Props) {
             {detail.data.fuels.map((fuel) => (
               <div className="fuel-row" key={fuel.code}>
                 <span>{fuel.label}</span>
-                <strong className={fuel.availability.includes('UNAVAILABLE') ? 'unavailable' : ''}>
+                <strong className={
+                  fuel.availability === 'TEMPORARILY_UNAVAILABLE' || fuel.availability === 'UNAVAILABLE'
+                    ? 'fuel-status unavailable'
+                    : fuel.availability !== 'AVAILABLE' || fuel.priceMilliEur == null ? 'fuel-status' : ''
+                }>
                   {displayPrice(fuel.availability, fuel.priceMilliEur)}
                 </strong>
               </div>

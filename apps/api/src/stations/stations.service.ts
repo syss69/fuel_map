@@ -40,7 +40,11 @@ export class StationsService {
        ORDER BY city NULLS LAST, official_id`,
       [this.department],
     );
+    const lastImport = await this.db.pool.query<{ updated_at: Date | null }>(
+      `SELECT max(finished_at) AS updated_at FROM import_runs WHERE status = 'SUCCESS'`,
+    );
     return {
+      updatedAt: lastImport.rows[0].updated_at?.toISOString() ?? null,
       stations: rows.map((row) => ({
         id: row.id,
         displayName: row.display_name ?? 'Station-service',
