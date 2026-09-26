@@ -1,0 +1,123 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #18382f;
+  background: #e8eee8;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { width: 100%; height: 100%; margin: 0; }
+button { font: inherit; }
+
+.app-shell { position: relative; width: 100%; height: 100%; overflow: hidden; }
+.map { position: absolute; inset: 0; }
+
+.masthead {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  max-width: min(430px, calc(100vw - 92px));
+  padding: 12px 16px 12px 12px;
+  background: rgba(255, 255, 252, 0.94);
+  border: 1px solid rgba(22, 53, 43, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(22, 53, 43, 0.16);
+  backdrop-filter: blur(10px);
+}
+
+.logo-mark {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  color: #fff;
+  background: #176b51;
+  border-radius: 12px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.masthead h1 { margin: 0; font-size: 18px; line-height: 1.1; }
+.masthead p { margin: 3px 0 0; color: #5c726a; font-size: 12px; line-height: 1.35; }
+
+.station-marker {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 3px solid white;
+  border-radius: 50%;
+  background: #e45c35;
+  box-shadow: 0 2px 8px rgba(44, 40, 28, 0.35);
+  cursor: pointer;
+  /* MapLibre controls transform; animating it makes markers lag behind the map. */
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+.station-marker:hover, .station-marker:focus-visible {
+  background: #c94724;
+  box-shadow: 0 0 0 4px rgba(228, 92, 53, 0.25), 0 2px 8px rgba(44, 40, 28, 0.35);
+  outline: none;
+}
+
+.map-message, .station-count {
+  position: absolute;
+  left: 18px;
+  bottom: 22px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 252, 0.94);
+  color: #3d554d;
+  box-shadow: 0 5px 18px rgba(22, 53, 43, 0.12);
+  font-size: 13px;
+}
+.map-message.error { color: #8b2e24; border-left: 4px solid #c54a37; }
+
+.station-card {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  width: min(370px, calc(100vw - 36px));
+  max-height: calc(100vh - 130px);
+  overflow: auto;
+  padding: 24px;
+  background: #fffef9;
+  border: 1px solid rgba(22, 53, 43, 0.12);
+  border-radius: 20px;
+  box-shadow: 0 18px 55px rgba(22, 53, 43, 0.25);
+}
+.close-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: #52665f;
+  background: #eff2ec;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+.eyebrow { margin: 0 0 5px; color: #e45c35; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.station-card h2 { margin: 0; padding-right: 30px; font-size: 24px; line-height: 1.15; }
+.brand { margin: 5px 0 0; color: #176b51; font-weight: 700; }
+.address { margin: 10px 0 0; color: #64766f; font-size: 14px; line-height: 1.45; }
+.fuel-list { margin-top: 20px; border-top: 1px solid #e3e8e2; }
+.fuel-row { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid #e3e8e2; }
+.fuel-row span { color: #52665f; }
+.fuel-row strong { color: #18382f; font-variant-numeric: tabular-nums; }
+.fuel-row strong.unavailable { color: #b14d38; font-size: 13px; }
+.card-status { margin: 20px 0; color: #52665f; }
+.card-status.error { color: #9b3528; }
+
+@media (max-width: 600px) {
+  .masthead { top: 10px; left: 10px; }
+  .masthead p { display: none; }
+  .station-card { right: 10px; bottom: 10px; width: calc(100vw - 20px); max-height: 55vh; }
+  .station-count, .map-message { left: 10px; bottom: 10px; }
+}

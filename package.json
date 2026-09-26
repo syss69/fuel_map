@@ -1,0 +1,24 @@
+{
+  "name": "fuel-map",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "npm@10.9.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"npm run dev --workspace=@fuel-map/api\" \"npm run dev --workspace=@fuel-map/web\"",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "db:migrate": "npm run migrate --workspace=@fuel-map/database",
+    "db:seed": "npm run seed --workspace=@fuel-map/database",
+    "db:generate": "npm run generate --workspace=@fuel-map/database",
+    "db:apply-overrides": "npm run apply-overrides --workspace=@fuel-map/api",
+    "import:fuels": "npm run import:fuels --workspace=@fuel-map/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

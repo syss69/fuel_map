@@ -1,0 +1,36 @@
+{
+  "name": "@fuel-map/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "predev": "npm run build --workspace=@fuel-map/database",
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "preimport:fuels": "npm run build --workspace=@fuel-map/database && tsc -p tsconfig.json --outDir dist-cli",
+    "import:fuels": "node dist-cli/cli/import-fuels.js",
+    "apply-overrides": "tsx src/cli/apply-overrides.ts"
+  },
+  "dependencies": {
+    "@fuel-map/database": "0.1.0",
+    "@nestjs/common": "^11.1.6",
+    "@nestjs/core": "^11.1.6",
+    "@nestjs/platform-express": "^11.1.6",
+    "@nestjs/schedule": "^6.0.0",
+    "dotenv": "^16.4.7",
+    "pg": "^8.16.3",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.10",
+    "@types/node": "^22.15.3",
+    "@types/pg": "^8.15.5",
+    "tsx": "^4.20.5",
+    "typescript": "^5.8.3"
+  }
+}
