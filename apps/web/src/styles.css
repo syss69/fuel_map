@@ -44,6 +44,24 @@ button { font: inherit; }
 .masthead h1 { margin: 0; font-size: 18px; line-height: 1.1; }
 .masthead p { margin: 3px 0 0; color: #5c726a; font-size: 12px; line-height: 1.35; }
 
+.fuel-filter {
+  position: absolute;
+  top: 18px;
+  right: 60px;
+  width: 210px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid rgba(22, 53, 43, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 252, 0.96);
+  box-shadow: 0 8px 28px rgba(22, 53, 43, 0.16);
+}
+.fuel-filter legend { padding: 0 6px; font-size: 13px; font-weight: 700; background: #fffef9; border-radius: 6px; }
+.fuel-filter-options { display: flex; flex-wrap: wrap; gap: 6px; }
+.fuel-filter-option { cursor: pointer; padding: 9px 11px; border: 0; border-radius: 9px; background: #eff2ec; color: inherit; font-size: 13px; }
+.fuel-filter-option[aria-pressed="true"] { background: #176b51; color: white; }
+.fuel-filter-option:focus-visible { outline: 3px solid #e45c35; outline-offset: 2px; }
+
 .station-marker {
   width: 22px;
   height: 22px;
@@ -80,7 +98,7 @@ button { font: inherit; }
   right: 18px;
   bottom: 18px;
   width: min(370px, calc(100vw - 36px));
-  max-height: calc(100vh - 130px);
+  max-height: calc(100vh - 240px);
   overflow: auto;
   padding: 24px;
   background: #fffef9;
@@ -115,9 +133,10 @@ button { font: inherit; }
 .card-status { margin: 20px 0; color: #52665f; }
 .card-status.error { color: #9b3528; }
 
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   .masthead { top: 10px; left: 10px; }
   .masthead p { display: none; }
-  .station-card { right: 10px; bottom: 10px; width: calc(100vw - 20px); max-height: 55vh; }
+  .fuel-filter { top: 90px; left: 10px; right: 60px; width: auto; padding: 8px; }
+  .station-card { right: 10px; bottom: 10px; width: calc(100vw - 20px); max-height: min(55vh, calc(100vh - 260px)); }
   .station-count, .map-message { left: 10px; bottom: 10px; }
 }

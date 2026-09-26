@@ -28,9 +28,13 @@ export class StationsService {
   constructor(private readonly db: DatabaseService) {}
 
   async list() {
-    const { rows } = await this.db.pool.query<StationRow>(
+    const { rows } = await this.db.pool.query<StationRow & { available_fuels: string[] }>(
       `SELECT id, official_id, display_name, brand, address, city,
-              ST_Y(location::geometry) AS lat, ST_X(location::geometry) AS lng
+              ST_Y(location::geometry) AS lat, ST_X(location::geometry) AS lng,
+              ARRAY(SELECT ft.code FROM station_fuels sf
+                    JOIN fuel_types ft ON ft.id = sf.fuel_type_id
+                    WHERE sf.station_id = stations.id AND sf.availability = 'AVAILABLE'
+                    ORDER BY ft.sort_order) AS available_fuels
        FROM stations
        WHERE department_code = $1 AND last_seen_at >= now() - interval '24 hours'
        ORDER BY city NULLS LAST, official_id`,
@@ -43,6 +47,7 @@ export class StationsService {
         brand: row.brand,
         lat: Number(row.lat),
         lng: Number(row.lng),
+        availableFuels: row.available_fuels,
       })),
     };
   }

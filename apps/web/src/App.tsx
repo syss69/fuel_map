@@ -1,13 +1,23 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import * as maplibregl from 'maplibre-gl';
 import type { Map, Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import mapWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { fetchStations } from './api';
+import type { FuelCode } from './api';
 import { StationCard } from './StationCard';
 
 const PAU: [number, number] = [-0.3708, 43.2951];
+const fuelOptions: Array<{ value: FuelCode | ''; label: string }> = [
+  { value: '', label: 'Tous' },
+  { value: 'GAZOLE', label: 'Gazole (Diesel)' },
+  { value: 'SP95', label: 'SP95' },
+  { value: 'SP98', label: 'SP98' },
+  { value: 'E10', label: 'E10' },
+  { value: 'E85', label: 'E85' },
+  { value: 'GPLC', label: 'GPLc' },
+];
 // Let Vite bundle the worker and its imports instead of resolving it beside an optimized dependency.
 maplibregl.setWorkerUrl(mapWorkerUrl);
 const mapStyle = import.meta.env.VITE_MAP_STYLE_URL ?? 'https://tiles.openfreemap.org/styles/liberty';
@@ -17,7 +27,17 @@ export default function App() {
   const mapRef = useRef<Map | null>(null);
   const markersRef = useRef<Marker[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [fuelFilter, setFuelFilter] = useState<FuelCode | ''>('');
   const stations = useQuery({ queryKey: ['stations'], queryFn: fetchStations });
+  const visibleStations = useMemo(() => (stations.data?.stations ?? []).filter(
+    (station) => !fuelFilter || station.availableFuels.includes(fuelFilter),
+  ), [stations.data, fuelFilter]);
+
+  useEffect(() => {
+    if (selectedId && !visibleStations.some((station) => station.id === selectedId)) {
+      setSelectedId(null);
+    }
+  }, [selectedId, visibleStations]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -37,9 +57,9 @@ export default function App() {
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !stations.data) return;
+    if (!map) return;
     markersRef.current.forEach((marker) => marker.remove());
-    markersRef.current = stations.data.stations.map((station) => {
+    markersRef.current = visibleStations.map((station) => {
       const element = document.createElement('button');
       element.className = 'station-marker';
       element.type = 'button';
@@ -54,7 +74,7 @@ export default function App() {
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current = [];
     };
-  }, [stations.data]);
+  }, [visibleStations]);
 
   return (
     <main className="app-shell">
@@ -66,12 +86,28 @@ export default function App() {
           <p>Prix des stations autour de Pau et dans le département</p>
         </div>
       </div>
+      <fieldset className="fuel-filter">
+        <legend>Carburant</legend>
+        <div className="fuel-filter-options">
+          {fuelOptions.map(({ value, label }) => (
+            <button className="fuel-filter-option" key={value} type="button"
+              aria-pressed={fuelFilter === value}
+              onClick={() => setFuelFilter((current) => current === value ? '' : value)}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </fieldset>
       {stations.isPending && <div className="map-message">Chargement des stations…</div>}
       {stations.isError && (
         <div className="map-message error">Les stations ne peuvent pas être chargées pour le moment.</div>
       )}
       {!stations.isPending && stations.data && (
-        <div className="station-count">{stations.data.stations.length} stations à jour</div>
+        <div className="station-count" role="status">
+          {fuelFilter && visibleStations.length === 0
+            ? 'Aucune station avec ce carburant disponible'
+            : `${visibleStations.length} stations affichées`}
+        </div>
       )}
       {selectedId && <StationCard stationId={selectedId} onClose={() => setSelectedId(null)} />}
     </main>

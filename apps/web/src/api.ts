@@ -5,12 +5,15 @@ export type Availability =
   | 'UNAVAILABLE'
   | 'UNKNOWN';
 
+export type FuelCode = 'GAZOLE' | 'SP95' | 'SP98' | 'E10' | 'E85' | 'GPLC';
+
 export interface StationMarker {
   id: string;
   displayName: string;
   brand: string | null;
   lat: number;
   lng: number;
+  availableFuels: FuelCode[];
 }
 
 export interface StationDetail {
