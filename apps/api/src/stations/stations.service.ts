@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { getConfig } from '../config';
+import { QueueService } from './queue.service';
 
 interface StationRow {
   id: string;
@@ -25,7 +26,7 @@ interface FuelRow {
 export class StationsService {
   private readonly department = getConfig().FUEL_DATASET_DEPARTMENT;
 
-  constructor(private readonly db: DatabaseService) {}
+  constructor(private readonly db: DatabaseService, private readonly queues: QueueService) {}
 
   async list() {
     const { rows } = await this.db.pool.query<StationRow & { available_fuels: string[] }>(
@@ -56,7 +57,7 @@ export class StationsService {
     };
   }
 
-  async detail(id: string) {
+  async detail(id: string, reporterId?: string) {
     const stationResult = await this.db.pool.query<StationRow>(
       `SELECT id, official_id, display_name, brand, address, city,
               ST_Y(location::geometry) AS lat, ST_X(location::geometry) AS lng
@@ -77,6 +78,7 @@ export class StationsService {
     return {
       id: station.id,
       officialId: station.official_id,
+      queue: await this.queues.aggregate(id, reporterId),
       displayName: station.display_name ?? 'Station-service',
       brand: station.brand,
       address: station.address,

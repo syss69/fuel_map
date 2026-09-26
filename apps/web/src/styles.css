@@ -58,6 +58,8 @@ button { font: inherit; }
 }
 .fuel-filter legend { padding: 0 6px; font-size: 13px; font-weight: 700; background: #fffef9; border-radius: 6px; }
 .fuel-filter-options { display: flex; flex-wrap: wrap; gap: 6px; }
+.fuel-filter-toggle { display: none; }
+.fuel-filter-toggle:focus-visible { outline: 3px solid #e45c35; outline-offset: 2px; }
 .fuel-filter-option { cursor: pointer; padding: 9px 11px; border: 0; border-radius: 9px; background: #eff2ec; color: inherit; font-size: 13px; }
 .fuel-filter-option[aria-pressed="true"] { background: #176b51; color: white; }
 .fuel-filter-option:focus-visible { outline: 3px solid #e45c35; outline-offset: 2px; }
@@ -114,7 +116,11 @@ button { font: inherit; }
   border-radius: 20px;
   box-shadow: 0 18px 55px rgba(22, 53, 43, 0.25);
 }
+.station-card-toolbar, .station-card-content { display: contents; }
+.close-button:focus-visible { outline: 3px solid #e45c35; outline-offset: 2px; }
 .close-button {
+  display: grid;
+  place-items: center;
   position: absolute;
   top: 12px;
   right: 12px;
@@ -139,6 +145,16 @@ button { font: inherit; }
 .fuel-row strong { color: #18382f; font-variant-numeric: tabular-nums; }
 .fuel-row strong.fuel-status { color: #64766f; font-size: 13px; text-align: right; overflow-wrap: anywhere; }
 .fuel-row strong.unavailable { color: #b14d38; font-size: 13px; }
+.queue-panel { margin-top: 22px; padding-top: 16px; border-top: 1px solid #e3e8e2; }
+.queue-panel h3 { margin: 0 0 12px; font-size: 16px; }
+.queue-panel p { color: #64766f; font-size: 13px; line-height: 1.45; margin: 8px 0; }
+.queue-panel .queue-latest { padding: 10px; background: #f5efe3; border-radius: 8px; }
+.queue-panel .queue-own { font-size: 12px; }
+.queue-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.queue-actions button { border: 1px solid #176b51; border-radius: 8px; background: #eff2ec; color: #176b51; padding: 10px 12px; cursor: pointer; }
+.queue-actions button:focus-visible { outline: 3px solid #e45c35; outline-offset: 2px; }
+.queue-actions button:disabled { opacity: .5; cursor: wait; }
+.queue-panel .error { color: #9b3528; }
 .card-status { margin: 20px 0; color: #52665f; }
 .card-status.error { color: #9b3528; }
 
@@ -146,6 +162,18 @@ button { font: inherit; }
   .masthead { top: 10px; left: 10px; }
   .masthead p { display: none; }
   .fuel-filter { top: 90px; left: 10px; right: 60px; width: auto; padding: 8px; }
+  .fuel-filter legend { display: none; }
+  .fuel-filter-toggle { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 40px; border: 0; border-radius: 8px; padding: 8px; color: #176b51; background: transparent; text-align: left; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .fuel-filter-options { margin-top: 6px; }
+  .fuel-filter-collapsed .fuel-filter-options { display: none; }
+  .fuel-filter { left: auto; right: 10px; top: 120px; width: min(280px, calc(100vw - 20px)); }
+  .fuel-filter-toggle { width: 44px; height: 44px; min-height: 44px; margin-left: auto; padding: 0; justify-content: center; border-radius: 50%; background: #fffef9; }
+  .fuel-filter-toggle[data-active="true"] { color: white; background: #176b51; }
+  .fuel-filter-collapsed { width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; }
   .station-card { right: 10px; bottom: 10px; width: calc(100vw - 20px); max-height: min(55vh, calc(100vh - 260px)); }
+  .station-card { display: flex; flex-direction: column; overflow: hidden; padding: 0; }
+  .station-card-toolbar { display: flex; justify-content: flex-end; flex-shrink: 0; padding: 8px 12px; background: #fffef9; }
+  .station-card-toolbar .close-button { position: static; width: 44px; height: 44px; }
+  .station-card-content { display: block; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 24px 24px; }
   .station-count, .map-message { left: 10px; bottom: 10px; }
 }

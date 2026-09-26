@@ -28,6 +28,7 @@ export default function App() {
   const markersRef = useRef<Marker[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [fuelFilter, setFuelFilter] = useState<FuelCode | ''>('');
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
   const stations = useQuery({ queryKey: ['stations'], queryFn: fetchStations, refetchInterval: 60_000 });
   const visibleStations = useMemo(() => (stations.data?.stations ?? []).filter(
     (station) => !fuelFilter || station.availableFuels.includes(fuelFilter),
@@ -88,9 +89,18 @@ export default function App() {
           <p>Prix des stations autour de Pau et dans le département</p>
         </div>
       </div>
-      <fieldset className="fuel-filter">
+      <fieldset className={`fuel-filter${filtersExpanded ? '' : ' fuel-filter-collapsed'}`}>
         <legend>Carburant</legend>
-        <div className="fuel-filter-options">
+        <button className="fuel-filter-toggle" type="button"
+          aria-expanded={filtersExpanded} aria-controls="fuel-filter-options"
+          aria-label={`${filtersExpanded ? 'Masquer les filtres' : 'Afficher les filtres'} — ${fuelOptions.find(option => option.value === fuelFilter)?.label}`}
+          data-active={Boolean(fuelFilter)}
+          onClick={() => setFiltersExpanded((expanded) => !expanded)}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            {filtersExpanded ? <path d="m6 6 12 12M18 6 6 18" /> : <path d="M3 4h18l-7 8v7l-4 2v-9Z" />}
+          </svg>
+        </button>
+        <div className="fuel-filter-options" id="fuel-filter-options">
           {fuelOptions.map(({ value, label }) => (
             <button className="fuel-filter-option" key={value} type="button"
               aria-pressed={fuelFilter === value}

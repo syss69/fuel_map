@@ -2,6 +2,7 @@ import {
   bigint,
   bigserial,
   integer,
+  index,
   pgEnum,
   pgTable,
   primaryKey,
@@ -12,6 +13,7 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 import { customType } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 
 const geographyPoint = customType<{ data: string }>({
   dataType() {
@@ -27,6 +29,7 @@ export const availabilityEnum = pgEnum('fuel_availability', [
   'UNKNOWN',
 ]);
 export const importStatusEnum = pgEnum('import_status', ['RUNNING', 'SUCCESS', 'FAILED']);
+export const queueStatusEnum = pgEnum('queue_status', ['NONE', 'LT_5', 'FROM_5_TO_10', 'FROM_11_TO_15', 'GT_15']);
 
 export const stations = pgTable(
   'stations',
@@ -46,6 +49,19 @@ export const stations = pgTable(
   },
   (table) => [uniqueIndex('stations_official_id_uidx').on(table.officialId)],
 );
+
+export const queueReports = pgTable('queue_reports', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  stationId: uuid('station_id').notNull().references(() => stations.id),
+  reporterId: uuid('reporter_id').notNull(),
+  queueStatus: queueStatusEnum('queue_status').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull().default(sql`now() + interval '45 minutes'`),
+}, (table) => [
+  uniqueIndex('queue_reports_station_reporter_unique').on(table.stationId, table.reporterId),
+  index('queue_reports_station_expires_idx').on(table.stationId, table.expiresAt),
+]);
 
 export const fuelTypes = pgTable('fuel_types', {
   id: smallint('id').primaryKey(),

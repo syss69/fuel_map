@@ -58,6 +58,18 @@ Stations are keyed by the official government ID and are never deleted when abse
 
 Every station has six current fuel rows. New stations receive six baseline history rows. Later history is appended only when price, availability or rupture start changes; a source price timestamp change alone updates current metadata without creating history. Prices are stored as integer thousandths of one euro.
 
+## Queue reports
+
+Apply `npm run db:migrate` before running the API after this update. Queue reports are separate from official fuel data and expire after 45 minutes without deleting stored rows.
+
+- `GET /api/v1/stations/:id?reporterId=<uuid>` includes `queue`; reporterId is optional and only exposes that reporter's active vote.
+- `PUT /api/v1/stations/:id/queue-report` accepts `{ "reporterId": "<uuid>", "status": "NONE" }` and returns the queue aggregate. Statuses: `NONE`, `LT_5`, `FROM_5_TO_10`, `FROM_11_TO_15`, `GT_15`.
+- The largest active group wins; ties use the group's latest update (then enum order for an exact timestamp tie). `confirmationsCount` counts all votes for the winner, including the current browser. `lastReportedAt` and `latestReport` describe the newest active vote; `statusLastReportedAt` describes the winner's latest vote.
+- Browser identity uses `fuelmap_reporter_id` in localStorage, with a page-session fallback if storage is blocked. This is anonymous identification, not authentication.
+- No queue polling or cleanup job is added. Details refresh after submitting a vote and through existing query lifecycle events.
+
+Run `node apps/api/queue.integration.cjs` after building and migrating to test queue behavior against PostgreSQL. Its fixtures and writes are rolled back.
+
 ## Station overrides
 
 Edit `data/station-overrides.json` with only names you know are correct:

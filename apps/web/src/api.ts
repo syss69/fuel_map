@@ -17,6 +17,7 @@ export interface StationMarker {
 }
 
 export interface StationDetail {
+  queue: QueueAggregate;
   id: string;
   officialId: string;
   displayName: string;
@@ -45,6 +46,26 @@ export function fetchStations(): Promise<{ stations: StationMarker[]; updatedAt:
   return getJson('/stations');
 }
 
-export function fetchStation(id: string): Promise<StationDetail> {
-  return getJson(`/stations/${encodeURIComponent(id)}`);
+export function fetchStation(id: string, reporterId: string): Promise<StationDetail> {
+  return getJson(`/stations/${encodeURIComponent(id)}?reporterId=${encodeURIComponent(reporterId)}`);
+}
+
+export type QueueStatus = 'NONE' | 'LT_5' | 'FROM_5_TO_10' | 'FROM_11_TO_15' | 'GT_15';
+export interface QueueAggregate {
+  status: QueueStatus | null;
+  reportsCount: number;
+  confirmationsCount: number;
+  lastReportedAt: string | null;
+  statusLastReportedAt: string | null;
+  latestReport: { status: QueueStatus; updatedAt: string } | null;
+  myReport: { status: QueueStatus; updatedAt: string } | null;
+}
+
+export async function reportQueue(id: string, reporterId: string, status: QueueStatus): Promise<QueueAggregate> {
+  const response = await fetch(`${baseUrl}/stations/${encodeURIComponent(id)}/queue-report`, {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reporterId, status }),
+  });
+  if (!response.ok) throw new Error('Impossible d’envoyer le signalement. Réessayez.');
+  return response.json();
 }
