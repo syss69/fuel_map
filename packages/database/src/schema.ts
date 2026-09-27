@@ -3,6 +3,7 @@ import {
   bigserial,
   integer,
   index,
+  check,
   pgEnum,
   pgTable,
   primaryKey,
@@ -69,6 +70,37 @@ export const fuelTypes = pgTable('fuel_types', {
   label: text('label').notNull(),
   sortOrder: smallint('sort_order').notNull(),
 });
+
+export const communityAvailabilityEnum = pgEnum('community_fuel_availability', ['AVAILABLE', 'UNAVAILABLE']);
+
+export const stationDataConfirmations = pgTable('station_data_confirmations', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  stationId: uuid('station_id').notNull().references(() => stations.id),
+  reporterId: uuid('reporter_id').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull().default(sql`now() + interval '3 hours'`),
+}, (t) => [
+  uniqueIndex('station_data_confirmations_unique').on(t.stationId, t.reporterId),
+  index('station_data_confirmations_active_idx').on(t.stationId, t.expiresAt),
+]);
+
+export const fuelChangeReports = pgTable('fuel_change_reports', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  stationId: uuid('station_id').notNull().references(() => stations.id),
+  fuelTypeId: smallint('fuel_type_id').notNull().references(() => fuelTypes.id),
+  reporterId: uuid('reporter_id').notNull(),
+  reportedPriceMilliEur: integer('reported_price_milli_eur'),
+  reportedAvailability: communityAvailabilityEnum('reported_availability'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull().default(sql`now() + interval '3 hours'`),
+}, (t) => [
+  uniqueIndex('fuel_change_reports_unique').on(t.stationId, t.fuelTypeId, t.reporterId),
+  index('fuel_change_reports_active_idx').on(t.stationId, t.expiresAt),
+  check('fuel_change_reports_has_value', sql`${t.reportedPriceMilliEur} IS NOT NULL OR ${t.reportedAvailability} IS NOT NULL`),
+  check('fuel_change_reports_positive_price', sql`${t.reportedPriceMilliEur} > 0`),
+]);
 
 export const stationFuels = pgTable(
   'station_fuels',

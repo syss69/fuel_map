@@ -70,6 +70,19 @@ Apply `npm run db:migrate` before running the API after this update. Queue repor
 
 Run `node apps/api/queue.integration.cjs` after building and migrating to test queue behavior against PostgreSQL. Its fixtures and writes are rolled back.
 
+## Fuel community layer
+
+Run `npm run db:migrate` before starting the updated API. Official `station_fuels`, importer behavior, marker colors and fuel filters are unchanged. Queue reports remain independent.
+
+- `PUT /api/v1/stations/:id/confirmation`: `{ "reporterId": "<uuid>" }` confirms the station's official fuel information and expires the same reporter's active fuel proposals.
+- `PUT /api/v1/stations/:id/fuel-reports`: `{ "reporterId": "<uuid>", "fuels": [{ "fuelCode": "SP98", "availability": "UNAVAILABLE", "priceMilliEur": 1899 }] }` saves proposals and expires the reporter's active confirmation. Each submitted fuel replaces that reporter's previous proposal; other fuels are retained.
+- Both return `community`; station details also include it, using the existing optional `reporterId` query parameter. It contains `confirmationsCount`, `myConfirmationActive`, `hasDiscrepancies` and `fuelDiscrepancies`. Each discrepancy has `fuelCode`, `availability: { value, reportsCount, lastReportedAt } | null` and `price: { valueMilliEur, reportsCount, lastReportedAt } | null`. No reporter identities are returned.
+- TTL is three hours, with no deletion job. Prices must be positive integers no larger than 2147483647. Availability accepts only `AVAILABLE`/`UNAVAILABLE`; official temporary and permanent unavailability both normalize to `UNAVAILABLE`, while unknown remains distinct.
+- Matching fields are discarded; a request with no remaining changes returns HTTP 400 without changing previous reports/confirmation. Read-time aggregation excludes expired and now-matching fields. Price and availability vote independently: most votes, then latest timestamp, then ascending value for an exact tie. Each count/time describes the winning value. Confirmations remain active until expiry even if official information changes.
+- The form accepts decimal euros with comma or dot and up to three decimal places. Empty fields mean no proposal, not deletion of official values. Submissions refresh details without adding polling.
+
+After building and migrating, run `node apps/api/community.integration.cjs` and `node apps/api/queue.integration.cjs`. Both roll back all test writes. For manual UI validation, `node apps/api/community.preview.cjs` serves an isolated fixture at `http://localhost:5174`, with a simulated first-submit error; press Enter to stop and roll back. This preview is local-only and is not part of the production API.
+
 ## Station overrides
 
 Edit `data/station-overrides.json` with only names you know are correct:

@@ -1,10 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchStation, Availability } from './api';
+import type { FuelCode } from './api';
 import { getReporterId } from './reporter';
 import { QueuePanel } from './QueuePanel';
+import { CommunityPanel } from './CommunityPanel';
+import { FuelWarning } from './FuelWarning';
 
 interface Props {
   stationId: string;
+  selectedFuel: FuelCode | '';
   onClose: () => void;
 }
 
@@ -17,7 +21,7 @@ function displayPrice(availability: Availability, price: number | null): string 
   return `${(price / 1_000).toFixed(3)} €/L`;
 }
 
-export function StationCard({ stationId, onClose }: Props) {
+export function StationCard({ stationId, selectedFuel, onClose }: Props) {
   const reporterId = getReporterId();
   const detail = useQuery({ queryKey: ['station', stationId, reporterId], queryFn: () => fetchStation(stationId, reporterId) });
 
@@ -44,9 +48,11 @@ export function StationCard({ stationId, onClose }: Props) {
             </p>
           </header>
           <div className="fuel-list">
-            {detail.data.fuels.map((fuel) => (
-              <div className="fuel-row" key={fuel.code}>
-                <span>{fuel.label}</span>
+            {detail.data.fuels.map((fuel) => {
+              const discrepancy = detail.data.community.fuelDiscrepancies.find(item => item.fuelCode === fuel.code);
+              return <div className="fuel-entry" key={fuel.code}>
+              <div className={`fuel-row${fuel.code === selectedFuel ? ' fuel-row-selected' : ''}`}>
+                <span>{fuel.label}{fuel.code === selectedFuel && <small className="fuel-selected-label">Sélectionné</small>}</span>
                 <strong className={
                   fuel.availability === 'TEMPORARILY_UNAVAILABLE' || fuel.availability === 'UNAVAILABLE'
                     ? 'fuel-status unavailable'
@@ -55,8 +61,11 @@ export function StationCard({ stationId, onClose }: Props) {
                   {displayPrice(fuel.availability, fuel.priceMilliEur)}
                 </strong>
               </div>
-            ))}
+              {discrepancy && <FuelWarning key={`${stationId}-${fuel.code}`} discrepancy={discrepancy} label={fuel.label} />}
+              </div>;
+            })}
           </div>
+          <CommunityPanel key={`community-${stationId}`} station={detail.data} reporterId={reporterId} />
           <QueuePanel key={stationId} stationId={stationId} reporterId={reporterId} queue={detail.data.queue} />
         </>
       )}

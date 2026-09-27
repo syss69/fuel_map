@@ -133,7 +133,7 @@ export default function App() {
           </small>
         </div>
       )}
-      {selectedId && <StationCard stationId={selectedId} onClose={() => setSelectedId(null)} />}
+      {selectedId && <StationCard stationId={selectedId} selectedFuel={fuelFilter} onClose={() => setSelectedId(null)} />}
     </main>
   );
 }

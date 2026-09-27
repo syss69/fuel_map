@@ -145,6 +145,29 @@ button { font: inherit; }
 .fuel-row strong { color: #18382f; font-variant-numeric: tabular-nums; }
 .fuel-row strong.fuel-status { color: #64766f; font-size: 13px; text-align: right; overflow-wrap: anywhere; }
 .fuel-row strong.unavailable { color: #b14d38; font-size: 13px; }
+.fuel-row-selected { background: #e8f3ec; border-left: 3px solid #176b51; border-radius: 8px; padding: 11px 10px; }
+.fuel-row-selected > span { color: #176b51; font-weight: 700; }
+.fuel-selected-label { display: block; margin-top: 3px; font-size: 10px; font-weight: 500; }
+.fuel-entry { position: relative; }
+.fuel-entry:has(.fuel-warning) > .fuel-row { padding-right: 40px; }
+.fuel-warning summary { position: absolute; top: 6px; right: 0; width: 32px; height: 32px; display: grid; place-items: center; list-style: none; border-radius: 50%; background: #fff0cd; color: #805000; font-weight: 800; cursor: pointer; }
+.fuel-warning summary::-webkit-details-marker { display: none; }
+.fuel-warning summary:focus-visible { outline: 3px solid #176b51; outline-offset: 2px; }
+.fuel-warning-content { padding: 12px; margin: 6px 0; border-radius: 10px; background: #fff4dc; color: #65450d; font-size: 13px; line-height: 1.5; }
+.fuel-warning-content p { margin: 8px 0; }
+.community-panel { margin-top: 20px; font-size: 13px; line-height: 1.45; }
+.community-panel > p { color: #64766f; }
+.community-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.community-actions button { padding: 10px 12px; min-height: 44px; border: 1px solid #176b51; border-radius: 8px; color: #176b51; background: #eff2ec; cursor: pointer; }
+.community-actions button:disabled { opacity: .5; cursor: default; }
+.community-actions button:focus-visible { outline: 3px solid #e45c35; outline-offset: 2px; }
+.community-fuel { margin: 12px 0; min-width: 0; padding: 12px; border: 1px solid #d6e2d8; border-radius: 10px; }
+.community-fuel legend { font-weight: 700; }
+.community-fuel p { color: #64766f; font-size: 12px; margin-top: 0; }
+.community-fuel label { display: block; margin-top: 10px; }
+.community-fuel input, .community-fuel select { display: block; width: 100%; min-width: 0; min-height: 44px; padding: 8px; margin-top: 4px; border: 1px solid #aabcb2; border-radius: 6px; background: white; color: #18382f; font: inherit; font-size: 16px; }
+.community-fuel input[aria-invalid="true"] { border-color: #9b3528; }
+.community-error { color: #9b3528; }
 .queue-panel { margin-top: 22px; padding-top: 16px; border-top: 1px solid #e3e8e2; }
 .queue-panel h3 { margin: 0 0 12px; font-size: 16px; }
 .queue-panel p { color: #64766f; font-size: 13px; line-height: 1.45; margin: 8px 0; }

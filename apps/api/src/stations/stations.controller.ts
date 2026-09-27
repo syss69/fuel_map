@@ -2,10 +2,25 @@ import { BadRequestException, Body, Controller, Get, Param, ParseUUIDPipe, Put, 
 import { z } from 'zod';
 import { QueueService } from './queue.service';
 import { StationsService } from './stations.service';
+import { CommunityService, confirmationSchema, fuelReportsSchema } from './community.service';
 
 @Controller('api/v1/stations')
 export class StationsController {
-  constructor(private readonly stations: StationsService, private readonly queues: QueueService) {}
+  constructor(private readonly stations: StationsService, private readonly queues: QueueService, private readonly community: CommunityService) {}
+
+  @Put(':id/confirmation')
+  confirm(@Param('id', ParseUUIDPipe) id: string, @Body() body: unknown) {
+    const parsed = confirmationSchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException('Confirmation invalide');
+    return this.community.confirm(id, parsed.data.reporterId);
+  }
+
+  @Put(':id/fuel-reports')
+  fuelReports(@Param('id', ParseUUIDPipe) id: string, @Body() body: unknown) {
+    const parsed = fuelReportsSchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException('Proposition invalide : vérifiez les carburants, disponibilités et prix.');
+    return this.community.report(id, parsed.data.reporterId, parsed.data.fuels);
+  }
 
   @Get()
   list() {

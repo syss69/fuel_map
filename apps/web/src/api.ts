@@ -17,6 +17,7 @@ export interface StationMarker {
 }
 
 export interface StationDetail {
+  community: CommunityState;
   queue: QueueAggregate;
   id: string;
   officialId: string;
@@ -26,7 +27,7 @@ export interface StationDetail {
   city: string | null;
   location: { lat: number; lng: number };
   fuels: Array<{
-    code: string;
+    code: FuelCode;
     label: string;
     priceMilliEur: number | null;
     availability: Availability;
@@ -67,5 +68,34 @@ export async function reportQueue(id: string, reporterId: string, status: QueueS
     body: JSON.stringify({ reporterId, status }),
   });
   if (!response.ok) throw new Error('Impossible d’envoyer le signalement. Réessayez.');
+  return response.json();
+}
+
+export type CommunityAvailability = 'AVAILABLE' | 'UNAVAILABLE';
+export interface FuelDiscrepancy {
+  fuelCode: FuelCode;
+  availability: { value: CommunityAvailability; reportsCount: number; lastReportedAt: string } | null;
+  price: { valueMilliEur: number; reportsCount: number; lastReportedAt: string } | null;
+}
+export interface CommunityState {
+  confirmationsCount: number;
+  myConfirmationActive: boolean;
+  hasDiscrepancies: boolean;
+  fuelDiscrepancies: FuelDiscrepancy[];
+}
+export interface FuelProposal {
+  fuelCode: FuelCode;
+  availability?: CommunityAvailability;
+  priceMilliEur?: number;
+}
+export async function submitCommunity(id: string, reporterId: string, fuels?: FuelProposal[]): Promise<CommunityState> {
+  const response = await fetch(`${baseUrl}/stations/${encodeURIComponent(id)}/${fuels ? 'fuel-reports' : 'confirmation'}`, {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(fuels ? { reporterId, fuels } : { reporterId }),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => null);
+    throw new Error(typeof body?.message === 'string' ? body.message : 'Envoi impossible. Réessayez.');
+  }
   return response.json();
 }
