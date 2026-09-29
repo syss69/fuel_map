@@ -51,6 +51,8 @@ export class StationsService {
         id: row.id,
         displayName: row.display_name ?? 'Station-service',
         brand: row.brand,
+        address: row.address,
+        city: row.city,
         lat: Number(row.lat),
         lng: Number(row.lng),
         availableFuels: row.available_fuels,

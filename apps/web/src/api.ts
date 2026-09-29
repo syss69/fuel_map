@@ -8,6 +8,8 @@ export type Availability =
 export type FuelCode = 'GAZOLE' | 'SP95' | 'SP98' | 'E10' | 'E85' | 'GPLC';
 
 export interface StationMarker {
+  address: string | null;
+  city: string | null;
   id: string;
   displayName: string;
   brand: string | null;
@@ -36,6 +38,14 @@ export interface StationDetail {
 }
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api/v1';
+export async function digestRequest(path:string, body:unknown):Promise<{message:string}> {
+  const response=await fetch(`${baseUrl}/digest-subscriptions${path}`,{
+    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),
+  });
+  const data=await response.json().catch(()=>null);
+  if(!response.ok)throw new Error(data?.message || 'Service temporairement indisponible. Réessayez.');
+  return data;
+}
 
 async function getJson<T>(path: string): Promise<T> {
   const response = await fetch(`${baseUrl}${path}`);

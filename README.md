@@ -1,4 +1,4 @@
-# Fuel Map — Pyrénées-Atlantiques
+# TrajetIco — Pyrénées-Atlantiques
 
 First working version of a fuel-station map for département 64. The API imports the complete current government dataset for the département, while the web app opens on Pau and remains navigable across the whole area.
 
@@ -102,4 +102,26 @@ Then run `npm run db:apply-overrides`. Missing names display as “Station-servi
 
 See `.env.example` for all settings. Backend configuration is validated at startup. `FUEL_IMPORT_CRON` defaults to every 15 minutes, `FUEL_DATASET_DEPARTMENT` to `64`, and the frontend map style defaults to OpenFreeMap Liberty.
 
-Migrations are intentionally never run automatically by the API. No Docker, monitoring, authentication, queues, cloud infrastructure, CI/CD, tests or history UI are included in this focused v0.
+Migrations are intentionally never run automatically by the API. No Docker, authentication, external job queues, cloud infrastructure or history UI are included.
+
+## Morning email digest
+
+The map's **Digest du matin** button opens the subscription form. Select a fuel, click a search point on the existing map, choose 5/10/15 km, optionally select an existing favorite station, and enter an email. Confirm the email before any digest is sent. Verification and unsubscribe pages require a button press so email link scanners cannot activate or cancel a subscription.
+
+Configuration: `RESEND_API_KEY`, `EMAIL_FROM=Trajetico <bonjour@trajetico.space>`, and a persistent random `DIGEST_TOKEN_SECRET` of at least 32 characters. Generate a secret once (for example `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`). Set `PUBLIC_APP_URL=https://trajetico.space` in production; otherwise links use `FRONTEND_ORIGIN`. Keep the secret stable and backed up: changing it invalidates reconstructed unsubscribe links. HTTPS and a verified sender domain are needed in production. `DIGEST_ENABLED=false` disables subscription creation and scheduling; existing verification/unsubscribe endpoints remain usable. Missing provider configuration disables sending without preventing API startup. Configure `TRUST_PROXY_HOPS` only to match your trusted deployment proxy chain (default 0), so IP limits use the correct address.
+
+API:
+
+- `POST /api/v1/digest-subscriptions`: `{ email, fuelCode, lat, lng, radiusMeters, favoriteStationId? }`; returns HTTP 202 with a neutral message. Radius is 5000, 10000 or 15000 metres. Email is normalized; one subscription per email. Pending/unsubscribed rows are reused, with a fresh verification link. Active subscriptions are left unchanged; unsubscribe and subscribe again to change their settings.
+- `POST /api/v1/digest-subscriptions/verify`: `{ token }`; consumes a valid pending token within 24 hours, returning `Votre abonnement est confirmé.`; invalid/expired links return 400.
+- `POST /api/v1/digest-subscriptions/unsubscribe`: `{ token }`; immediately cancels the subscription and pending digest retries; repeated requests with the same valid token succeed. No login is required.
+
+Migration `0003_digest.sql` adds `digest_subscriptions`, `email_deliveries`, and PostgreSQL-backed `digest_rate_limits`. Verification tokens are cryptographically random and stored only as SHA-256 hashes. Unsubscribe tokens use a separate HMAC with a random per-subscription nonce and server secret; only the hash and nonce are stored, allowing the long-lived token to be reconstructed for each email. Token values are absent from delivery payloads. Links put tokens in the URL fragment, with a no-referrer page policy.
+
+Limits: 10 subscription requests per IP/hour, at most 3 confirmation emails per address/24-hour window, and 5 minutes between confirmation emails. Limited and existing-active requests use the same neutral response. Failed verification emails can be requested again after the cooldown; no verification token is persisted in plaintext for retries.
+
+`DigestScheduler` checks every 5 minutes → `DigestService` selects active subscriptions due after 08:00 in Europe/Paris (including DST) → `EmailService` calls Resend. Keep the API running for scheduling; after downtime, eligible subscriptions are caught up later that day. Each pass processes at most 50 subscriptions, pacing sends. PostgreSQL advisory locks and a unique subscription/type/local-date delivery record prevent concurrent duplicate digests. Resend idempotency keys and immutable saved email payloads protect retries after ambiguous network failures. Retryable sends get at most 5 attempts; attempts older than 23 hours require manual reconciliation (`UNKNOWN`) rather than risking reuse beyond Resend's idempotency window. Inspect `email_deliveries` for statuses/errors and provider IDs. `SENT` means Resend accepted the email, not confirmed inbox delivery; webhooks are not implemented.
+
+The digest uses only current official `station_fuels`: AVAILABLE, positive price, station seen within 24 hours, PostGIS radius, sorted by price then distance. It includes up to three matches (or an explicit empty-state message), plus the favorite even outside the radius, with official availability and freshness timestamps. Queue reports, community reports and the official importer are unchanged. Both HTML and plain-text bodies are sent; every digest includes unsubscribe.
+
+After migration and build, run `node apps/api/digest.integration.cjs`. It uses real PostgreSQL with rollback and a recording email provider: verification/expiry, pending reuse, limits, radius/ranking, favorite, timezone boundaries, unsubscribe, and idempotent delivery retries are checked without sending real emails.

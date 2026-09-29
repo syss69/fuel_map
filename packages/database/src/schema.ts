@@ -4,6 +4,9 @@ import {
   integer,
   index,
   check,
+  time,
+  date,
+  jsonb,
   pgEnum,
   pgTable,
   primaryKey,
@@ -140,4 +143,38 @@ export const importRuns = pgTable('import_runs', {
   fuelStatesChanged: integer('fuel_states_changed').notNull().default(0),
   historyRowsCreated: integer('history_rows_created').notNull().default(0),
   errorMessage: text('error_message'),
+});
+
+export const digestStatusEnum = pgEnum('digest_subscription_status', ['PENDING', 'ACTIVE', 'UNSUBSCRIBED']);
+export const emailTypeEnum = pgEnum('email_delivery_type', ['MORNING_DIGEST', 'VERIFICATION']);
+export const emailStatusEnum = pgEnum('email_delivery_status', ['PENDING', 'SENT', 'RETRY', 'FAILED', 'UNKNOWN', 'CANCELLED']);
+export const digestSubscriptions = pgTable('digest_subscriptions', {
+  id: uuid('id').defaultRandom().primaryKey(), email: text('email').notNull().unique(),
+  fuelTypeId: smallint('fuel_type_id').notNull().references(() => fuelTypes.id),
+  center: geographyPoint('center').notNull(), radiusMeters: integer('radius_meters').notNull(),
+  favoriteStationId: uuid('favorite_station_id').references(() => stations.id),
+  timezone: text('timezone').notNull().default('Europe/Paris'), sendTime: time('send_time').notNull().default('08:00'),
+  status: digestStatusEnum('status').notNull().default('PENDING'),
+  verificationTokenHash: text('verification_token_hash'), verificationExpiresAt: timestamp('verification_expires_at', { withTimezone: true }),
+  verifiedAt: timestamp('verified_at', { withTimezone: true }), unsubscribeTokenHash: text('unsubscribe_token_hash').notNull(),
+  unsubscribeNonce: uuid('unsubscribe_nonce').notNull(), lastConfirmationAt: timestamp('last_confirmation_at', { withTimezone: true }),
+  lastSentAt: timestamp('last_sent_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [
+  uniqueIndex('digest_verification_hash_idx').on(t.verificationTokenHash), uniqueIndex('digest_unsubscribe_hash_idx').on(t.unsubscribeTokenHash),
+  index('digest_active_idx').on(t.status, t.lastSentAt),
+  check('digest_radius', sql`${t.radiusMeters} IN (5000,10000,15000)`),
+  check('digest_timezone', sql`${t.timezone} = 'Europe/Paris'`), check('digest_send_time', sql`${t.sendTime} = '08:00'`),
+]);
+export const emailDeliveries = pgTable('email_deliveries', {
+  id: uuid('id').defaultRandom().primaryKey(), subscriptionId: uuid('subscription_id').notNull().references(() => digestSubscriptions.id),
+  type: emailTypeEnum('type').notNull(), recipient: text('recipient').notNull(), providerMessageId: text('provider_message_id'),
+  status: emailStatusEnum('status').notNull().default('PENDING'), localDate: date('local_date'), payload: jsonb('payload'),
+  attempts: integer('attempts').notNull().default(0), lastError: text('last_error'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), sentAt: timestamp('sent_at', { withTimezone: true }),
+}, t => [uniqueIndex('email_deliveries_day_unique').on(t.subscriptionId, t.type, t.localDate)]);
+export const digestRateLimits = pgTable('digest_rate_limits', {
+  key: text('key').primaryKey(), windowStartedAt: timestamp('window_started_at', { withTimezone: true }).notNull().defaultNow(),
+  hits: integer('hits').notNull().default(1),
 });
