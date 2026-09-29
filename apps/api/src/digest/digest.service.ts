@@ -13,6 +13,9 @@ export const subscriptionSchema = z.object({
   lat: z.number().finite().min(-90).max(90), lng: z.number().finite().min(-180).max(180),
   radiusMeters: z.union([z.literal(5000),z.literal(10000),z.literal(15000)]),
   favoriteStationId: z.string().uuid().nullable().optional(),
+  weekdays: z.array(z.number().int().min(1).max(7)).min(1).max(3)
+    .refine(days=>new Set(days).size===days.length,'Choisissez des jours différents.')
+    .transform(days=>[...days].sort((a,b)=>a-b)),
 }).strict();
 export const tokenSchema = z.object({token:z.string().min(40).max(160).regex(/^[A-Za-z0-9_.-]+$/)}).strict();
 export const tokenHash = (token: string) => createHash('sha256').update(token).digest('hex');
@@ -59,17 +62,18 @@ export class DigestService {
       if(!await this.limit(client,`email:${tokenHash(body.email)}`,86400,3)) {await client.query('COMMIT');return neutral;}
       const id=old?.id ?? randomUUID(), nonce=randomUUID(), token=randomBytes(32).toString('base64url');
       await client.query(`INSERT INTO digest_subscriptions(id,email,fuel_type_id,center,radius_meters,favorite_station_id,
-        verification_token_hash,verification_expires_at,unsubscribe_token_hash,unsubscribe_nonce,last_confirmation_at)
-        VALUES($1,$2,$3,ST_SetSRID(ST_MakePoint($4,$5),4326)::geography,$6,$7,$8,now()+interval '24 hours',$9,$10,now())
+        verification_token_hash,verification_expires_at,unsubscribe_token_hash,unsubscribe_nonce,last_confirmation_at,weekdays)
+        VALUES($1,$2,$3,ST_SetSRID(ST_MakePoint($4,$5),4326)::geography,$6,$7,$8,now()+interval '24 hours',$9,$10,now(),$11)
         ON CONFLICT(email) DO UPDATE SET fuel_type_id=EXCLUDED.fuel_type_id,center=EXCLUDED.center,radius_meters=EXCLUDED.radius_meters,
           favorite_station_id=EXCLUDED.favorite_station_id,status='PENDING',verification_token_hash=EXCLUDED.verification_token_hash,
           verification_expires_at=EXCLUDED.verification_expires_at,unsubscribe_token_hash=EXCLUDED.unsubscribe_token_hash,
-          unsubscribe_nonce=EXCLUDED.unsubscribe_nonce,verified_at=NULL,last_confirmation_at=now(),updated_at=now()`,
-        [id,body.email,fuel.id,body.lng,body.lat,body.radiusMeters,body.favoriteStationId ?? null,tokenHash(token),tokenHash(this.unsubscribeToken(id,nonce)),nonce]);
+          unsubscribe_nonce=EXCLUDED.unsubscribe_nonce,weekdays=EXCLUDED.weekdays,verified_at=NULL,last_confirmation_at=now(),updated_at=now()`,
+        [id,body.email,fuel.id,body.lng,body.lat,body.radiusMeters,body.favoriteStationId ?? null,tokenHash(token),tokenHash(this.unsubscribeToken(id,nonce)),nonce,body.weekdays]);
       const deliveryId=randomUUID();
       await client.query(`INSERT INTO email_deliveries(id,subscription_id,type,recipient,attempts) VALUES($1,$2,'VERIFICATION',$3,1)`,[deliveryId,id,body.email]);
       const summary=`Les 3 stations les moins chères pour ${fuel.label}, dans un rayon de ${body.radiusMeters/1000} km autour de ${body.lat.toFixed(5)}, ${body.lng.toFixed(5)}${body.favoriteStationId ? ', avec votre station favorite' : ''}.`;
-      pending={deliveryId,message:verificationEmail(settings.from,body.email,this.link(settings.appUrl,'verify',token),summary)};
+      const days=body.weekdays.map(day=>['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'][day-1]).join(', ');
+      pending={deliveryId,message:verificationEmail(settings.from,body.email,this.link(settings.appUrl,'verify',token),`${summary} Jours choisis : ${days}.`)};
       await client.query('COMMIT');
     } catch(error) {await client.query('ROLLBACK');throw error;} finally {client.release();}
     if(pending) {
@@ -129,6 +133,9 @@ export class DigestService {
       const candidates=(await client.query<{id:string}>(`SELECT s.id FROM digest_subscriptions s
         LEFT JOIN email_deliveries d ON d.subscription_id=s.id AND d.type='MORNING_DIGEST' AND d.local_date=(now() AT TIME ZONE s.timezone)::date
         WHERE s.status='ACTIVE' AND (now() AT TIME ZONE s.timezone)::time>=s.send_time
+          AND extract(isodow FROM now() AT TIME ZONE s.timezone)::int=ANY(s.weekdays)
+          AND (SELECT count(*) FROM email_deliveries sent WHERE sent.subscription_id=s.id AND sent.type='MORNING_DIGEST' AND sent.status='SENT'
+            AND (sent.sent_at AT TIME ZONE s.timezone)>=date_trunc('week',now() AT TIME ZONE s.timezone))<3
           AND (s.last_sent_at IS NULL OR (s.last_sent_at AT TIME ZONE s.timezone)::date<(now() AT TIME ZONE s.timezone)::date)
           AND (d.id IS NULL OR (d.status IN ('PENDING','RETRY') AND d.attempts<5))
         ORDER BY s.last_sent_at NULLS FIRST,s.id LIMIT 50`)).rows;
@@ -146,6 +153,9 @@ export class DigestService {
     try {
       const sub=(await client.query<Subscription & {local_date:string}>(`SELECT *,to_char(now() AT TIME ZONE timezone,'YYYY-MM-DD') AS local_date
         FROM digest_subscriptions WHERE id=$1 AND status='ACTIVE' AND (now() AT TIME ZONE timezone)::time>=send_time
+        AND extract(isodow FROM now() AT TIME ZONE timezone)::int=ANY(weekdays)
+        AND (SELECT count(*) FROM email_deliveries sent WHERE sent.subscription_id=digest_subscriptions.id AND sent.type='MORNING_DIGEST' AND sent.status='SENT'
+          AND (sent.sent_at AT TIME ZONE timezone)>=date_trunc('week',now() AT TIME ZONE timezone))<3
         AND (last_sent_at IS NULL OR (last_sent_at AT TIME ZONE timezone)::date<(now() AT TIME ZONE timezone)::date)`,[id])).rows[0];
       if(!sub)return;
       let delivery=(await client.query<Delivery>(`SELECT * FROM email_deliveries WHERE subscription_id=$1 AND type='MORNING_DIGEST' AND local_date=$2`,[id,sub.local_date])).rows[0];

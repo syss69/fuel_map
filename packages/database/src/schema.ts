@@ -154,6 +154,7 @@ export const digestSubscriptions = pgTable('digest_subscriptions', {
   center: geographyPoint('center').notNull(), radiusMeters: integer('radius_meters').notNull(),
   favoriteStationId: uuid('favorite_station_id').references(() => stations.id),
   timezone: text('timezone').notNull().default('Europe/Paris'), sendTime: time('send_time').notNull().default('08:00'),
+  weekdays: integer('weekdays').array().notNull().default(sql`ARRAY[1,3,5]`),
   status: digestStatusEnum('status').notNull().default('PENDING'),
   verificationTokenHash: text('verification_token_hash'), verificationExpiresAt: timestamp('verification_expires_at', { withTimezone: true }),
   verifiedAt: timestamp('verified_at', { withTimezone: true }), unsubscribeTokenHash: text('unsubscribe_token_hash').notNull(),
@@ -165,6 +166,7 @@ export const digestSubscriptions = pgTable('digest_subscriptions', {
   uniqueIndex('digest_verification_hash_idx').on(t.verificationTokenHash), uniqueIndex('digest_unsubscribe_hash_idx').on(t.unsubscribeTokenHash),
   index('digest_active_idx').on(t.status, t.lastSentAt),
   check('digest_radius', sql`${t.radiusMeters} IN (5000,10000,15000)`),
+  check('digest_weekdays', sql`array_ndims(${t.weekdays}) = 1 AND array_lower(${t.weekdays},1) = 1 AND cardinality(${t.weekdays}) BETWEEN 1 AND 3 AND ${t.weekdays} <@ ARRAY[1,2,3,4,5,6,7] AND array_position(${t.weekdays},NULL) IS NULL AND (cardinality(${t.weekdays})<2 OR ${t.weekdays}[1]<>${t.weekdays}[2]) AND (cardinality(${t.weekdays})<3 OR (${t.weekdays}[1]<>${t.weekdays}[3] AND ${t.weekdays}[2]<>${t.weekdays}[3]))`),
   check('digest_timezone', sql`${t.timezone} = 'Europe/Paris'`), check('digest_send_time', sql`${t.sendTime} = '08:00'`),
 ]);
 export const emailDeliveries = pgTable('email_deliveries', {

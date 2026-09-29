@@ -40,7 +40,9 @@ const {digestEmail}=require('./dist/digest/email.templates');
    await execute(`INSERT INTO station_fuels(station_id,fuel_type_id,price_milli_eur,availability) SELECT $1,id,$2,$3 FROM fuel_types WHERE code='GAZOLE'`,[id,price,availability]);
   }
   const email=`digest-${randomUUID()}@example.test`,ip=randomUUID();
-  const body={email,fuelCode:'GAZOLE',lat:0,lng:0,radiusMeters:10000,favoriteStationId:stationIds[6]};
+  const today=clock.getUTCDay() || 7;
+  const body={email,fuelCode:'GAZOLE',lat:0,lng:0,radiusMeters:10000,favoriteStationId:stationIds[6],weekdays:[today]};
+  for(const weekdays of [[],[1,2,3,4],[1,1],[0],[8],[1.5],undefined])assert.equal(subscriptionSchema.safeParse({...body,weekdays}).success,false);
   for(const invalid of [{...body,radiusMeters:1},{...body,lat:91},{...body,lng:181},{...body,email:'bad'},{...body,fuelCode:'BAD'}])assert.equal(subscriptionSchema.safeParse(invalid).success,false);
   const neutral=await service.subscribe(body,ip);
   await assert.rejects(()=>service.subscribe({...body,favoriteStationId:randomUUID()},randomUUID()),/inconnue/);
@@ -60,6 +62,19 @@ const {digestEmail}=require('./dist/digest/email.templates');
   await service.verify(token);await assert.rejects(()=>service.verify(token),/invalide/);
   sub=(await execute('SELECT * FROM digest_subscriptions WHERE email=$1',[email])).rows[0];
   assert.equal(sub.status,'ACTIVE');assert.equal(sub.verification_token_hash,null);assert.equal(sub.verification_expires_at,null);
+  assert.deepEqual(sub.weekdays,[today]);
+  await execute('UPDATE digest_subscriptions SET weekdays=$2 WHERE id=$1',[sub.id,[today===7?1:today+1]]);
+  const beforeOffDay=calls.length;await service.runMorning();assert.equal(calls.length,beforeOffDay);
+  await execute('UPDATE digest_subscriptions SET weekdays=$2 WHERE id=$1',[sub.id,[today]]);
+  await execute('SAVEPOINT weekly_limit');
+  for(let i=0;i<3;i++)await execute("INSERT INTO email_deliveries(subscription_id,type,recipient,status,sent_at) VALUES($1,'MORNING_DIGEST',$2,'SENT',now())",[sub.id,email]);
+  const beforeWeeklyLimit=calls.length;await service.runMorning();assert.equal(calls.length,beforeWeeklyLimit);
+  await execute('ROLLBACK TO SAVEPOINT weekly_limit');
+  for(const days of [[],[1,1],[1,2,3,4],[8],[null]]){
+    await execute('SAVEPOINT invalid_days');
+    await assert.rejects(()=>execute('UPDATE digest_subscriptions SET weekdays=$2 WHERE id=$1',[sub.id,days]),/digest_weekdays/);
+    await execute('ROLLBACK TO SAVEPOINT invalid_days');
+  }
   assert.deepEqual(await service.subscribe(body,randomUUID()),neutral);assert.equal(calls.length,2);
   const snapshot=await service.snapshot(proxy,sub.id,'2026-09-28');
   assert.deepEqual(snapshot.top.map(s=>s.id),stationIds.slice(0,3));

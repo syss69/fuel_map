@@ -5,6 +5,7 @@
     { "idx": 0, "version": "7", "when": 1727222400000, "tag": "0000_initial", "breakpoints": true },
     { "idx": 1, "version": "7", "when": 1790467200000, "tag": "0001_queue_reports", "breakpoints": true },
     { "idx": 2, "version": "7", "when": 1790553600000, "tag": "0002_fuel_community", "breakpoints": true },
-    { "idx": 3, "version": "7", "when": 1790640000000, "tag": "0003_digest", "breakpoints": true }
+    { "idx": 3, "version": "7", "when": 1790640000000, "tag": "0003_digest", "breakpoints": true },
+    { "idx": 4, "version": "7", "when": 1790726400000, "tag": "0004_digest_weekdays", "breakpoints": true }
   ]
 }

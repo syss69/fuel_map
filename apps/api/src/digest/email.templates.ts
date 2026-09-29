@@ -18,8 +18,8 @@ const button = (url: string, label: string) => `<p style="margin:24px 0"><a href
 export function verificationEmail(from: string, to: string, url: string, summary: string): EmailMessage {
   const subject = 'Confirmez votre abonnement Trajetico';
   return { from, to: [to], subject,
-    html: layout(subject, `<p>${escape(summary)}</p><p>Un email chaque matin à 08:00 (Europe/Paris).</p>${button(url,'Confirmer mon abonnement')}<p>Ce lien expire dans 24 heures. Si vous n’avez pas demandé cet abonnement, ignorez cet email.</p>`),
-    text: `${subject}\n${summary}\nChaque matin à 08:00 (Europe/Paris).\nConfirmer mon abonnement : ${url}\nCe lien expire dans 24 heures. Si vous n’avez pas fait cette demande, ignorez cet email.`,
+    html: layout(subject, `<p>${escape(summary)}</p><p>Un email les jours choisis à 08:00 (Europe/Paris), trois jours par semaine maximum.</p>${button(url,'Confirmer mon abonnement')}<p>Ce lien expire dans 24 heures. Si vous n’avez pas demandé cet abonnement, ignorez cet email.</p>`),
+    text: `${subject}\n${summary}\nLes jours choisis à 08:00 (Europe/Paris), trois jours par semaine maximum.\nConfirmer mon abonnement : ${url}\nCe lien expire dans 24 heures. Si vous n’avez pas fait cette demande, ignorez cet email.`,
   };
 }
 export function digestEmail(snapshot: DigestSnapshot, unsubscribeUrl: string): EmailMessage {

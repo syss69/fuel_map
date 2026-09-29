@@ -125,3 +125,7 @@ Limits: 10 subscription requests per IP/hour, at most 3 confirmation emails per 
 The digest uses only current official `station_fuels`: AVAILABLE, positive price, station seen within 24 hours, PostGIS radius, sorted by price then distance. It includes up to three matches (or an explicit empty-state message), plus the favorite even outside the radius, with official availability and freshness timestamps. Queue reports, community reports and the official importer are unchanged. Both HTML and plain-text bodies are sent; every digest includes unsubscribe.
 
 After migration and build, run `node apps/api/digest.integration.cjs`. It uses real PostgreSQL with rollback and a recording email provider: verification/expiry, pending reuse, limits, radius/ranking, favorite, timezone boundaries, unsubscribe, and idempotent delivery retries are checked without sending real emails.
+
+### Digest weekdays
+Subscriptions require `weekdays`: 1–3 distinct ISO weekday numbers (1=Monday, 7=Sunday). The form starts with no days selected. Both scheduler selection and send-time checks use the subscriber's Paris weekday; missed days are not caught up on unselected days. A maximum of three accepted morning digests per Paris calendar week (Monday–Sunday) also applies. Migration 0004 gives existing subscriptions Monday/Wednesday/Friday. To change an existing active subscription, unsubscribe using its email link and subscribe again with the desired days. Verification emails list the selected days. Run the migration before restarting the API.
+

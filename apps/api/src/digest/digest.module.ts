@@ -10,7 +10,7 @@ export class DigestController {
   @HttpCode(202)
   create(@Body() body:unknown,@Ip() ip:string){
     const parsed=subscriptionSchema.safeParse(body);
-    if(!parsed.success)throw new BadRequestException('Vérifiez votre email, le carburant, la zone et le rayon.');
+    if(!parsed.success)throw new BadRequestException('Vérifiez votre email, le carburant, la zone, le rayon et choisissez 1 à 3 jours différents.');
     return this.digest.subscribe(parsed.data,ip);
   }
   @Post('verify')
