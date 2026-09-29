@@ -4,8 +4,9 @@ import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
 import { ImportsModule } from './imports/imports.module';
 import { StationsModule } from './stations/stations.module';
+import { DigestModule } from './digest/digest.module';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), DatabaseModule, HealthModule, StationsModule, ImportsModule],
+  imports: [ScheduleModule.forRoot(), DatabaseModule, HealthModule, StationsModule, ImportsModule, DigestModule],
 })
 export class AppModule {}

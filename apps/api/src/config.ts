@@ -12,6 +12,12 @@ const schema = z.object({
   FUEL_DATASET_DEPARTMENT: z.string().min(1).default('64'),
   FUEL_IMPORT_CRON: z.string().min(1).default('*/15 * * * *'),
   FUEL_API_BASE_URL: z.string().url().default('https://data.economie.gouv.fr'),
+  RESEND_API_KEY: z.string().optional(),
+  DIGEST_TOKEN_SECRET: z.preprocess(value => value === '' ? undefined : value, z.string().min(32).optional()),
+  PUBLIC_APP_URL: z.preprocess(value => value === '' ? undefined : value, z.string().url().optional()),
+  EMAIL_FROM: z.string().optional(),
+  DIGEST_ENABLED: z.enum(['true', 'false']).default('true'),
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
 });
 
 export type AppConfig = z.infer<typeof schema>;
