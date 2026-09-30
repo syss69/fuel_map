@@ -204,6 +204,7 @@ export default function App() {
               {' (Paris)'}
             </> : 'Aucune synchronisation réussie'}
           </small>
+          <small className="last-update">Noms : <a href="https://www.data.gouv.fr/datasets/referentiel-des-noms-et-enseignes-de-stations-service-enrichi-par-openstreetmap" target="_blank" rel="noopener noreferrer">Chiffrex / © OpenStreetMap</a> (ODbL)</small>
         </div>
       )}
       {selectedId && <StationCard stationId={selectedId} selectedFuel={fuelFilter || (fuelOptions.some(f=>f.value===linkedFuel)?linkedFuel as FuelCode:'')} onClose={() => {setSelectedId(null);history.replaceState(null,'',location.pathname);}} />}

@@ -1,1 +1,322 @@
-{}
+{
+  "40220006": {
+    "displayName": "Carrefour",
+    "brand": "Carrefour"
+  },
+  "64000001": {
+    "displayName": "Auchan"
+  },
+  "64000007": {
+    "displayName": "Esso Express"
+  },
+  "64000009": {
+    "displayName": "E.Leclerc"
+  },
+  "64000011": {
+    "displayName": "Intermarché"
+  },
+  "64000015": {
+    "displayName": "Total Access"
+  },
+  "64000016": {
+    "displayName": "Total Access"
+  },
+  "64000017": {
+    "displayName": "Avia"
+  },
+  "64100009": {
+    "displayName": "Intermarché"
+  },
+  "64100010": {
+    "displayName": "Carrefour"
+  },
+  "64100013": {
+    "displayName": "Esso"
+  },
+  "64100014": {
+    "displayName": "Total Access"
+  },
+  "64100015": {
+    "displayName": "TotalEnergies"
+  },
+  "64100016": {
+    "displayName": "Total"
+  },
+  "64103001": {
+    "displayName": "E.Leclerc"
+  },
+  "64110003": {
+    "displayName": "Total"
+  },
+  "64110004": {
+    "displayName": "E. Leclerc"
+  },
+  "64110006": {
+    "displayName": "Total Access"
+  },
+  "64120001": {
+    "displayName": "Total"
+  },
+  "64120005": {
+    "displayName": "E.Leclerc"
+  },
+  "64121003": {
+    "displayName": "Total Access"
+  },
+  "64130003": {
+    "displayName": "Intermarché"
+  },
+  "64130006": {
+    "displayName": "Carrefour Market"
+  },
+  "64140004": {
+    "displayName": "Intermarché"
+  },
+  "64140005": {
+    "displayName": "Total"
+  },
+  "64140006": {
+    "displayName": "Netto"
+  },
+  "64140007": {
+    "displayName": "Auchan"
+  },
+  "64150004": {
+    "displayName": "E. Leclerc"
+  },
+  "64150008": {
+    "displayName": "Carrefour"
+  },
+  "64160001": {
+    "displayName": "Super U"
+  },
+  "64160003": {
+    "displayName": "Intermarché"
+  },
+  "64170001": {
+    "displayName": "TotalEnergies"
+  },
+  "64170005": {
+    "displayName": "E.Leclerc"
+  },
+  "64170012": {
+    "displayName": "Eni"
+  },
+  "64170013": {
+    "displayName": "Eni"
+  },
+  "64170014": {
+    "displayName": "Super U"
+  },
+  "64190002": {
+    "displayName": "Elan"
+  },
+  "64190004": {
+    "displayName": "8 à Huit",
+    "brand": "8 à Huit"
+  },
+  "64200002": {
+    "displayName": "Total"
+  },
+  "64200006": {
+    "displayName": "E.Leclerc"
+  },
+  "64200008": {
+    "displayName": "Esso Express"
+  },
+  "64200009": {
+    "displayName": "Total Access"
+  },
+  "64210004": {
+    "displayName": "Intermarché"
+  },
+  "64210005": {
+    "displayName": "TotalEnergies"
+  },
+  "64210006": {
+    "displayName": "TotalEnergies"
+  },
+  "64220003": {
+    "displayName": "Intermarché"
+  },
+  "64230006": {
+    "displayName": "Carrefour Contact"
+  },
+  "64233001": {
+    "displayName": "Carrefour",
+    "brand": "Carrefour"
+  },
+  "64240004": {
+    "displayName": "Avia"
+  },
+  "64240005": {
+    "displayName": "Carrefour"
+  },
+  "64240006": {
+    "displayName": "E.Leclerc"
+  },
+  "64250006": {
+    "displayName": "Carrefour Market"
+  },
+  "64260002": {
+    "displayName": "TotalEnergies Contact",
+    "brand": "TotalEnergies Contact"
+  },
+  "64260005": {
+    "displayName": "Avia",
+    "brand": "Avia"
+  },
+  "64270001": {
+    "displayName": "Total"
+  },
+  "64270002": {
+    "displayName": "Carrefour"
+  },
+  "64270005": {
+    "displayName": "E.Leclerc"
+  },
+  "64290001": {
+    "displayName": "Super U",
+    "brand": "Super U"
+  },
+  "64300002": {
+    "displayName": "Total"
+  },
+  "64300003": {
+    "displayName": "E.Leclerc"
+  },
+  "64300005": {
+    "displayName": "Super U",
+    "brand": "Super U"
+  },
+  "64300007": {
+    "displayName": "Système U"
+  },
+  "64310001": {
+    "displayName": "Intermarché"
+  },
+  "64310002": {
+    "displayName": "Netto"
+  },
+  "64320003": {
+    "displayName": "Super U"
+  },
+  "64320005": {
+    "displayName": "TotalEnergies"
+  },
+  "64330001": {
+    "displayName": "Intermarché"
+  },
+  "64350003": {
+    "displayName": "Carrefour Contact"
+  },
+  "64360000": {
+    "displayName": "Intermarché",
+    "brand": "Intermarché"
+  },
+  "64370001": {
+    "displayName": "Carrefour"
+  },
+  "64390002": {
+    "displayName": "E.Leclerc"
+  },
+  "64400002": {
+    "displayName": "Total"
+  },
+  "64400003": {
+    "displayName": "E.Leclerc"
+  },
+  "64400005": {
+    "displayName": "Intermarché"
+  },
+  "64410001": {
+    "displayName": "Carrefour Contact"
+  },
+  "64420001": {
+    "displayName": "Intermarché"
+  },
+  "64430001": {
+    "displayName": "Intermarché"
+  },
+  "64440002": {
+    "displayName": "Intermarché"
+  },
+  "64440003": {
+    "displayName": "TotalEnergies"
+  },
+  "64450002": {
+    "displayName": "Elan"
+  },
+  "64470001": {
+    "displayName": "Elan"
+  },
+  "64480001": {
+    "displayName": "Super U"
+  },
+  "64500003": {
+    "displayName": "Carrefour"
+  },
+  "64500004": {
+    "displayName": "Fredy"
+  },
+  "64500005": {
+    "displayName": "E.Leclerc"
+  },
+  "64500006": {
+    "displayName": "TotalEnergies"
+  },
+  "64510001": {
+    "displayName": "Intermarché"
+  },
+  "64520001": {
+    "displayName": "Elan"
+  },
+  "64520002": {
+    "displayName": "Intermarché"
+  },
+  "64530002": {
+    "displayName": "Intermarché",
+    "brand": "Intermarché"
+  },
+  "64530004": {
+    "displayName": "Total"
+  },
+  "64570002": {
+    "displayName": "Intermarché Contact",
+    "brand": "Intermarché Contact"
+  },
+  "64600002": {
+    "displayName": "Carrefour"
+  },
+  "64600007": {
+    "displayName": "TotalEnergies"
+  },
+  "64600009": {
+    "displayName": "E.Leclerc"
+  },
+  "64604001": {
+    "displayName": "E.Leclerc"
+  },
+  "64700001": {
+    "displayName": "TotalEnergies"
+  },
+  "64780001": {
+    "displayName": "E. Leclerc"
+  },
+  "64800003": {
+    "displayName": "Total Contact",
+    "brand": "Total Contact"
+  },
+  "64800005": {
+    "displayName": "Intermarché"
+  },
+  "64800007": {
+    "displayName": "Super U"
+  },
+  "64990001": {
+    "displayName": "Total"
+  },
+  "64990002": {
+    "displayName": "Intermarché"
+  }
+}

@@ -1,0 +1,1142 @@
+[
+  {
+    "id_station_officiel": "40220006",
+    "nom_normalise": "Carrefour",
+    "adresse": "60 Boulevard Jacques Duclos",
+    "ville": "Boucau",
+    "code_postal": "40220",
+    "latitude_osm": "43.52378900",
+    "longitude_osm": "-1.46394300",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64000001",
+    "nom_normalise": "Auchan",
+    "adresse": "1 Avenue du Général Leclerc",
+    "ville": "Pau",
+    "code_postal": "64000",
+    "latitude_osm": "43.30477367",
+    "longitude_osm": "-0.32975306",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64000007",
+    "nom_normalise": "Esso Express",
+    "adresse": "34 Avenue des Martyrs du Pont Long",
+    "ville": "Lons",
+    "code_postal": "64000",
+    "latitude_osm": "43.33911624",
+    "longitude_osm": "-0.37913327",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64000009",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "Avenue Louis Sallenave",
+    "ville": "Pau",
+    "code_postal": "64000",
+    "latitude_osm": "43.31747372",
+    "longitude_osm": "-0.35645372",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64000011",
+    "nom_normalise": "Intermarché",
+    "adresse": "169 Boulevard de la Paix",
+    "ville": "Pau",
+    "code_postal": "64000",
+    "latitude_osm": "43.31893375",
+    "longitude_osm": "-0.34709742",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64000015",
+    "nom_normalise": "Total Access",
+    "adresse": "305/309 BD DE LA PAIX",
+    "ville": "Pau",
+    "code_postal": "64000",
+    "latitude_osm": "43.32197851",
+    "longitude_osm": "-0.36751949",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64000016",
+    "nom_normalise": "Total Access",
+    "adresse": "208 AV JEAN MERMOZ",
+    "ville": "Pau",
+    "code_postal": "64000",
+    "latitude_osm": "43.31864697",
+    "longitude_osm": "-0.37821040",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64000017",
+    "nom_normalise": "Avia",
+    "adresse": "20 avenue Jean Mermoz",
+    "ville": "Pau",
+    "code_postal": "64000",
+    "latitude_osm": "43.30740065",
+    "longitude_osm": "-0.37613178",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64100009",
+    "nom_normalise": "Intermarché",
+    "adresse": "Rond-Point Grand-Basque",
+    "ville": "Bayonne",
+    "code_postal": "64100",
+    "latitude_osm": "43.49225940",
+    "longitude_osm": "-1.45222440",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64100010",
+    "nom_normalise": "Carrefour",
+    "adresse": "22 Chemin d'Arancette",
+    "ville": "Bayonne",
+    "code_postal": "64100",
+    "latitude_osm": "43.48364210",
+    "longitude_osm": "-1.48781310",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64100013",
+    "nom_normalise": "Esso",
+    "adresse": "14 Avenue Interne Jacques Loëb",
+    "ville": "Bayonne",
+    "code_postal": "64100",
+    "latitude_osm": "43.48200500",
+    "longitude_osm": "-1.48281720",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64100014",
+    "nom_normalise": "Total Access",
+    "adresse": "6 AVENUE LOUIS DE FOIX",
+    "ville": "Bayonne",
+    "code_postal": "64100",
+    "latitude_osm": "43.50485000",
+    "longitude_osm": "-1.46710640",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64100015",
+    "nom_normalise": "TotalEnergies",
+    "adresse": "20 AVENUE MARECHAL JUIN",
+    "ville": "Bayonne",
+    "code_postal": "64100",
+    "latitude_osm": "43.49260670",
+    "longitude_osm": "-1.45877700",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64100016",
+    "nom_normalise": "Total",
+    "adresse": "123 avenue henri de navarre",
+    "ville": "Bayonne",
+    "code_postal": "64100",
+    "latitude_osm": "43.51192790",
+    "longitude_osm": "-1.44033885",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64103001",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "90 avenue Henri de Navarre",
+    "ville": "Bayonne",
+    "code_postal": "64100",
+    "latitude_osm": "43.50516758",
+    "longitude_osm": "-1.44418687",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64110003",
+    "nom_normalise": "Total",
+    "adresse": "AVENUE HENRI IV",
+    "ville": "Jurançon",
+    "code_postal": "64110",
+    "latitude_osm": "43.28053661",
+    "longitude_osm": "-0.38725466",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64110004",
+    "nom_normalise": "E. Leclerc",
+    "adresse": "Avenue du Général de Gaulle",
+    "ville": "Mazères-Lezons",
+    "code_postal": "64110",
+    "latitude_osm": "43.27925117",
+    "longitude_osm": "-0.36103822",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64110006",
+    "nom_normalise": "Total Access",
+    "adresse": "RN134 18 AV HENRI 4",
+    "ville": "Jurançon",
+    "code_postal": "64110",
+    "latitude_osm": "43.28562579",
+    "longitude_osm": "-0.38336222",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64120001",
+    "nom_normalise": "Total",
+    "adresse": "ROUTE DE GARRIS",
+    "ville": "Amendeuix-Oneix",
+    "code_postal": "64120",
+    "latitude_osm": "43.33074978",
+    "longitude_osm": "-1.03888974",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64120004",
+    "nom_normalise": "Carrefour",
+    "adresse": "40 Zone d'activité",
+    "ville": "Saint-Palais",
+    "code_postal": "64120",
+    "latitude_osm": "43.32961700",
+    "longitude_osm": "-1.03763795",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64120005",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "ZAC DE TTARGA",
+    "ville": "Aïcirits-Camou-Suhast",
+    "code_postal": "64120",
+    "latitude_osm": "43.33249800",
+    "longitude_osm": "-1.01613060",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64121003",
+    "nom_normalise": "Total Access",
+    "adresse": "14 Rue ALEXANDRO VOLTA",
+    "ville": "Montardon",
+    "code_postal": "64121",
+    "latitude_osm": "43.35372649",
+    "longitude_osm": "-0.37958359",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64121004",
+    "nom_normalise": "Intermarché",
+    "adresse": "Rue de Fabrèges ZAC du pont long",
+    "ville": "Serres-Castet",
+    "code_postal": "64121",
+    "latitude_osm": "43.36034690",
+    "longitude_osm": "-0.38445395",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64122001",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "RN 10",
+    "ville": "Urrugne",
+    "code_postal": "64122",
+    "latitude_osm": "43.37548277",
+    "longitude_osm": "-1.67554933",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64130003",
+    "nom_normalise": "Intermarché",
+    "adresse": "1 AVENUE DU GENERAL DE GAULLE",
+    "ville": "Chéraute",
+    "code_postal": "64130",
+    "latitude_osm": "43.22967225",
+    "longitude_osm": "-0.87395670",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64130006",
+    "nom_normalise": "Carrefour Market",
+    "adresse": "36 Boulevard des Pyrénées",
+    "ville": "Mauléon-Licharre",
+    "code_postal": "64130",
+    "latitude_osm": "43.22623170",
+    "longitude_osm": "-0.88522100",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64140004",
+    "nom_normalise": "Intermarché",
+    "adresse": "78 Route de Bayonne",
+    "ville": "Billère",
+    "code_postal": "64140",
+    "latitude_osm": "43.30387680",
+    "longitude_osm": "-0.39900690",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64140005",
+    "nom_normalise": "Total",
+    "adresse": "90 RTE DE BAYONNE",
+    "ville": "Billère",
+    "code_postal": "64140",
+    "latitude_osm": "43.30593771",
+    "longitude_osm": "-0.40285239",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64140006",
+    "nom_normalise": "Netto",
+    "adresse": "163 AVENUE JEAN MERMOZ",
+    "ville": "Billère",
+    "code_postal": "64140",
+    "latitude_osm": "43.31951010",
+    "longitude_osm": "-0.37918790",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64140007",
+    "nom_normalise": "Auchan",
+    "adresse": "Centre commercial du mail de Lons 21 Avenue Didier Daurat",
+    "ville": "Lons",
+    "code_postal": "64140",
+    "latitude_osm": "43.32950420",
+    "longitude_osm": "-0.38198100",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64150003",
+    "nom_normalise": "Total",
+    "adresse": "RD 33",
+    "ville": "Pardies",
+    "code_postal": "64150",
+    "latitude_osm": "43.36864190",
+    "longitude_osm": "-0.58481340",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64150004",
+    "nom_normalise": "E. Leclerc",
+    "adresse": "Avenue Charles Moureu",
+    "ville": "Mourenx",
+    "code_postal": "64150",
+    "latitude_osm": "43.37423830",
+    "longitude_osm": "-0.62315444",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64150008",
+    "nom_normalise": "Carrefour",
+    "adresse": "CHEMIN DEPARTEMENTAL 533",
+    "ville": "Mourenx",
+    "code_postal": "64150",
+    "latitude_osm": "43.38564980",
+    "longitude_osm": "-0.61126940",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64160001",
+    "nom_normalise": "Super U",
+    "adresse": "22 Rue de la Bastide",
+    "ville": "Morlaàs",
+    "code_postal": "64160",
+    "latitude_osm": "43.35042230",
+    "longitude_osm": "-0.26233610",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64160003",
+    "nom_normalise": "Intermarché",
+    "adresse": "Rue Baratnau",
+    "ville": "Morlaàs",
+    "code_postal": "64160",
+    "latitude_osm": "43.34635072",
+    "longitude_osm": "-0.25512639",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64170001",
+    "nom_normalise": "TotalEnergies",
+    "adresse": "35 Route Départementale 817",
+    "ville": "Lacq",
+    "code_postal": "64170",
+    "latitude_osm": "43.41511930",
+    "longitude_osm": "-0.62851800",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64170005",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "RUE DE LA PATTE D'OIE",
+    "ville": "Artix",
+    "code_postal": "64170",
+    "latitude_osm": "43.39775030",
+    "longitude_osm": "-0.57101220",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64170012",
+    "nom_normalise": "Eni",
+    "adresse": "AIRE DE LACQ AUDEJOS SUD",
+    "ville": "Lacq",
+    "code_postal": "64170",
+    "latitude_osm": "43.42146390",
+    "longitude_osm": "-0.59898600",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64170013",
+    "nom_normalise": "Eni",
+    "adresse": "AIRE DE LACQ AUDEJOS NORD",
+    "ville": "Lacq",
+    "code_postal": "64170",
+    "latitude_osm": "43.41873270",
+    "longitude_osm": "-0.58452040",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64170014",
+    "nom_normalise": "Super U",
+    "adresse": "Zone Eurolacq 2  51 RUE DES ECUREUILS",
+    "ville": "Artix",
+    "code_postal": "64170",
+    "latitude_osm": "43.39240640",
+    "longitude_osm": "-0.55490420",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64190002",
+    "nom_normalise": "Elan",
+    "adresse": "ROUTE DEPARTEMENTALE 936",
+    "ville": "Susmiou",
+    "code_postal": "64190",
+    "latitude_osm": "43.32049970",
+    "longitude_osm": "-0.77136360",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64190004",
+    "nom_normalise": "Intermarché",
+    "adresse": "Place de l'Espagnolette",
+    "ville": "Navarrenx",
+    "code_postal": "64190",
+    "latitude_osm": "43.31906440",
+    "longitude_osm": "-0.77089380",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64200002",
+    "nom_normalise": "Total",
+    "adresse": "AV. DE GRAMMONT",
+    "ville": "Biarritz",
+    "code_postal": "64200",
+    "latitude_osm": "43.47564882",
+    "longitude_osm": "-1.55312227",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64200006",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "Zone d'Iraty",
+    "ville": "Biarritz",
+    "code_postal": "64200",
+    "latitude_osm": "43.46368665",
+    "longitude_osm": "-1.53881873",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64200008",
+    "nom_normalise": "Esso Express",
+    "adresse": "Rond-point de la Négresse",
+    "ville": "Biarritz",
+    "code_postal": "64200",
+    "latitude_osm": "43.46048520",
+    "longitude_osm": "-1.54755720",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64200009",
+    "nom_normalise": "Total Access",
+    "adresse": "80, AVENUE DE LA MARNE",
+    "ville": "Biarritz",
+    "code_postal": "64200",
+    "latitude_osm": "43.48139436",
+    "longitude_osm": "-1.54265173",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64210004",
+    "nom_normalise": "Intermarché",
+    "adresse": "ROUTE NATIONALE 10",
+    "ville": "Bidart",
+    "code_postal": "64210",
+    "latitude_osm": "43.44785700",
+    "longitude_osm": "-1.57503190",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64210005",
+    "nom_normalise": "TotalEnergies",
+    "adresse": "AUTOROUTE A63 - AIRE DE BIDART EST",
+    "ville": "Bidart",
+    "code_postal": "64210",
+    "latitude_osm": "43.42220280",
+    "longitude_osm": "-1.59697640",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64210006",
+    "nom_normalise": "TotalEnergies",
+    "adresse": "AUTOROUTE A63 - AIRE DE BIDART OUEST",
+    "ville": "Bidart",
+    "code_postal": "64210",
+    "latitude_osm": "43.42285031",
+    "longitude_osm": "-1.59863379",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64220002",
+    "nom_normalise": "Total",
+    "adresse": "1151 rte de St Jean Pied de Port",
+    "ville": "Saint-Jean-le-Vieux",
+    "code_postal": "64220",
+    "latitude_osm": "43.16681000",
+    "longitude_osm": "-1.21193200",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64220003",
+    "nom_normalise": "Intermarché",
+    "adresse": "CD 933",
+    "ville": "Ispoure",
+    "code_postal": "64220",
+    "latitude_osm": "43.16848060",
+    "longitude_osm": "-1.22795280",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64220004",
+    "nom_normalise": "Carrefour",
+    "adresse": "AV DU JAI ALAI",
+    "ville": "Saint-Jean-Pied-de-Port",
+    "code_postal": "64220",
+    "latitude_osm": "43.16673270",
+    "longitude_osm": "-1.23283556",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64230004",
+    "nom_normalise": "Total",
+    "adresse": "RD32 ROUTE D'ARZACQ",
+    "ville": "Mazerolles",
+    "code_postal": "64230",
+    "latitude_osm": "43.44616870",
+    "longitude_osm": "-0.47009770",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64230006",
+    "nom_normalise": "Carrefour Contact",
+    "adresse": "3 RUE PRINCIPALE",
+    "ville": "Poey-de-Lescar",
+    "code_postal": "64230",
+    "latitude_osm": "43.34647820",
+    "longitude_osm": "-0.47877810",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64233001",
+    "nom_normalise": "Carrefour",
+    "adresse": "route de bayonne",
+    "ville": "Lons",
+    "code_postal": "64230",
+    "latitude_osm": "43.31451121",
+    "longitude_osm": "-0.42788893",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64240003",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "Route de Cambo",
+    "ville": "Hasparren",
+    "code_postal": "64240",
+    "latitude_osm": "43.38245950",
+    "longitude_osm": "-1.31775140",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64240004",
+    "nom_normalise": "Avia",
+    "adresse": "Avenue Léon Guichené",
+    "ville": "Hasparren",
+    "code_postal": "64240",
+    "latitude_osm": "43.38579160",
+    "longitude_osm": "-1.29830180",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64240005",
+    "nom_normalise": "Carrefour",
+    "adresse": "ALLEE DE LA CROIX",
+    "ville": "Urt",
+    "code_postal": "64240",
+    "latitude_osm": "43.49312820",
+    "longitude_osm": "-1.29390530",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64240006",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "Route d'Elizaberri",
+    "ville": "Hasparren",
+    "code_postal": "64240",
+    "latitude_osm": "43.38644800",
+    "longitude_osm": "-1.31393150",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64250001",
+    "nom_normalise": "Intermarché",
+    "adresse": "ZA Errobi",
+    "ville": "Itxassou",
+    "code_postal": "64250",
+    "latitude_osm": "43.35037890",
+    "longitude_osm": "-1.41558280",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64250006",
+    "nom_normalise": "Carrefour Market",
+    "adresse": "17 Allée Edmond Rostand",
+    "ville": "Cambo-les-Bains",
+    "code_postal": "64250",
+    "latitude_osm": "43.36197180",
+    "longitude_osm": "-1.40378000",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64260002",
+    "nom_normalise": "Carrefour Market",
+    "adresse": "22 rue du Parc National",
+    "ville": "Arudy",
+    "code_postal": "64260",
+    "latitude_osm": "43.10347880",
+    "longitude_osm": "-0.43708040",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64260005",
+    "nom_normalise": "Intermarché",
+    "adresse": "Avenue Aristide Briand",
+    "ville": "Louvie-Juzon",
+    "code_postal": "64260",
+    "latitude_osm": "43.09754095",
+    "longitude_osm": "-0.41859457",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64270001",
+    "nom_normalise": "Total",
+    "adresse": "62 Avenue des Docteurs Foix",
+    "ville": "Salies-de-Béarn",
+    "code_postal": "64270",
+    "latitude_osm": "43.47500451",
+    "longitude_osm": "-0.91291305",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64270002",
+    "nom_normalise": "Carrefour",
+    "adresse": "Route d'Orthez",
+    "ville": "Salies-de-Béarn",
+    "code_postal": "64270",
+    "latitude_osm": "43.47480720",
+    "longitude_osm": "-0.91669200",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64270005",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "865 RD 817",
+    "ville": "Puyoô",
+    "code_postal": "64270",
+    "latitude_osm": "43.52727950",
+    "longitude_osm": "-0.91699860",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64300002",
+    "nom_normalise": "Total",
+    "adresse": "1 RTE DE BAYONNE",
+    "ville": "Orthez",
+    "code_postal": "64300",
+    "latitude_osm": "43.48971652",
+    "longitude_osm": "-0.78644899",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64300003",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "419 Route de Bayonne",
+    "ville": "Orthez",
+    "code_postal": "64300",
+    "latitude_osm": "43.48959252",
+    "longitude_osm": "-0.79732549",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64300005",
+    "nom_normalise": "Super U",
+    "adresse": "Route de Pau",
+    "ville": "Orthez",
+    "code_postal": "64300",
+    "latitude_osm": "43.48204630",
+    "longitude_osm": "-0.74830678",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64300007",
+    "nom_normalise": "Système U",
+    "adresse": "ZA DE L'ESCLAUZE",
+    "ville": "Sault-de-Navailles",
+    "code_postal": "64300",
+    "latitude_osm": "43.54251450",
+    "longitude_osm": "-0.68289850",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64310001",
+    "nom_normalise": "Intermarché",
+    "adresse": "RD 918 ZAC de Lizardia II - Quartier Ibarron",
+    "ville": "Saint-Pée-sur-Nivelle",
+    "code_postal": "64310",
+    "latitude_osm": "43.35835181",
+    "longitude_osm": "-1.57528403",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64310002",
+    "nom_normalise": "Netto",
+    "adresse": "PLACE DU CHÂTEAU",
+    "ville": "Saint-Pée-sur-Nivelle",
+    "code_postal": "64310",
+    "latitude_osm": "43.35213010",
+    "longitude_osm": "-1.54997200",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64320003",
+    "nom_normalise": "Super U",
+    "adresse": "Chemin Cam Marty",
+    "ville": "Idron",
+    "code_postal": "64320",
+    "latitude_osm": "43.29532569",
+    "longitude_osm": "-0.32351025",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64320005",
+    "nom_normalise": "TotalEnergies",
+    "adresse": "22 ROUTE DE TARBES",
+    "ville": "Bizanos",
+    "code_postal": "64320",
+    "latitude_osm": "43.30325140",
+    "longitude_osm": "-0.32282761",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64330001",
+    "nom_normalise": "Intermarché",
+    "adresse": "Avenue Georges Phesans",
+    "ville": "Garlin",
+    "code_postal": "64330",
+    "latitude_osm": "43.55800000",
+    "longitude_osm": "-0.28400000",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64350003",
+    "nom_normalise": "Carrefour Contact",
+    "adresse": "Rue des Pelhans",
+    "ville": "Lembeye",
+    "code_postal": "64350",
+    "latitude_osm": "43.45052090",
+    "longitude_osm": "-0.10786980",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64370001",
+    "nom_normalise": "Carrefour",
+    "adresse": "ZA DE N'HAUX",
+    "ville": "Arthez-de-Béarn",
+    "code_postal": "64370",
+    "latitude_osm": "43.47602490",
+    "longitude_osm": "-0.61280830",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64390002",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "Carrères du Dessus",
+    "ville": "Sauveterre-de-Béarn",
+    "code_postal": "64390",
+    "latitude_osm": "43.40049420",
+    "longitude_osm": "-0.94849550",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64400002",
+    "nom_normalise": "Total",
+    "adresse": "AVENUE CHARLES MOUREU",
+    "ville": "Oloron-Sainte-Marie",
+    "code_postal": "64400",
+    "latitude_osm": "43.19066953",
+    "longitude_osm": "-0.61714549",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64400003",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "Avenue Alexandre Fleming",
+    "ville": "Oloron-Sainte-Marie",
+    "code_postal": "64400",
+    "latitude_osm": "43.19778869",
+    "longitude_osm": "-0.61746936",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64400005",
+    "nom_normalise": "Intermarché",
+    "adresse": "65 Rue des Oustalots prolongés",
+    "ville": "Oloron-Sainte-Marie",
+    "code_postal": "64400",
+    "latitude_osm": "43.17998390",
+    "longitude_osm": "-0.61349930",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64410001",
+    "nom_normalise": "Carrefour Contact",
+    "adresse": "route de Samadet",
+    "ville": "Arzacq-Arraziguet",
+    "code_postal": "64410",
+    "latitude_osm": "43.53623649",
+    "longitude_osm": "-0.41015856",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64420001",
+    "nom_normalise": "Intermarché",
+    "adresse": "ZAC PYRENEES EST BEARN",
+    "ville": "Nousty",
+    "code_postal": "64420",
+    "latitude_osm": "43.27055655",
+    "longitude_osm": "-0.20039011",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64430001",
+    "nom_normalise": "Intermarché",
+    "adresse": "ROUTE DE SAINT JEAN PIED DE PORT",
+    "ville": "Saint-Étienne-de-Baïgorry",
+    "code_postal": "64430",
+    "latitude_osm": "43.18276100",
+    "longitude_osm": "-1.33567190",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64440002",
+    "nom_normalise": "Intermarché",
+    "adresse": "Rue du Bourguet",
+    "ville": "Laruns",
+    "code_postal": "64440",
+    "latitude_osm": "42.99160900",
+    "longitude_osm": "-0.42266650",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64440003",
+    "nom_normalise": "TotalEnergies",
+    "adresse": "29 Avenue de Gerp",
+    "ville": "Laruns",
+    "code_postal": "64440",
+    "latitude_osm": "42.98178790",
+    "longitude_osm": "-0.42264720",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64450001",
+    "nom_normalise": "Spar",
+    "adresse": "21 ROUTE DE BORDEAUX",
+    "ville": "Astis",
+    "code_postal": "64450",
+    "latitude_osm": "43.44037567",
+    "longitude_osm": "-0.32586021",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64450002",
+    "nom_normalise": "Elan",
+    "adresse": "1 ROUTE DE BORDEAUX",
+    "ville": "Auriac",
+    "code_postal": "64450",
+    "latitude_osm": "43.46626850",
+    "longitude_osm": "-0.32342290",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64470001",
+    "nom_normalise": "Elan",
+    "adresse": "-",
+    "ville": "Tardets-Sorholus",
+    "code_postal": "64470",
+    "latitude_osm": "43.12059750",
+    "longitude_osm": "-0.86746710",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64480001",
+    "nom_normalise": "Super U",
+    "adresse": "CD 932 - RUE BAZTER",
+    "ville": "Ustaritz",
+    "code_postal": "64480",
+    "latitude_osm": "43.39326570",
+    "longitude_osm": "-1.45681370",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64480004",
+    "nom_normalise": "Total",
+    "adresse": "Route de CAMBO",
+    "ville": "Larressore",
+    "code_postal": "64480",
+    "latitude_osm": "43.36992090",
+    "longitude_osm": "-1.42866790",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64480005",
+    "nom_normalise": "Total",
+    "adresse": "506 CHEMIN ARKIA",
+    "ville": "Ustaritz",
+    "code_postal": "64480",
+    "latitude_osm": "43.40551620",
+    "longitude_osm": "-1.46808290",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64490001",
+    "nom_normalise": "Intermarché",
+    "adresse": "LE BOURG",
+    "ville": "Accous",
+    "code_postal": "64490",
+    "latitude_osm": "42.97729440",
+    "longitude_osm": "-0.60488970",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64500003",
+    "nom_normalise": "Carrefour",
+    "adresse": "107, Avenue de Jalday",
+    "ville": "Saint-Jean-de-Luz",
+    "code_postal": "64500",
+    "latitude_osm": "43.40409400",
+    "longitude_osm": "-1.62745840",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64500004",
+    "nom_normalise": "TotalEnergies",
+    "adresse": "RN 10",
+    "ville": "Saint-Jean-de-Luz",
+    "code_postal": "64500",
+    "latitude_osm": "43.39895806",
+    "longitude_osm": "-1.64111344",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64500005",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "Avenue de Lahanchipia",
+    "ville": "Saint-Jean-de-Luz",
+    "code_postal": "64500",
+    "latitude_osm": "43.40155025",
+    "longitude_osm": "-1.63330445",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64500006",
+    "nom_normalise": "TotalEnergies",
+    "adresse": "26 - RN 618 AVENUE DE CHANTACO",
+    "ville": "Saint-Jean-de-Luz",
+    "code_postal": "64500",
+    "latitude_osm": "43.38215079",
+    "longitude_osm": "-1.64910497",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64510001",
+    "nom_normalise": "Intermarché",
+    "adresse": "PARC D'ACTIVITE CLEMENT ADER",
+    "ville": "Bordes",
+    "code_postal": "64510",
+    "latitude_osm": "43.24966040",
+    "longitude_osm": "-0.27943970",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64520001",
+    "nom_normalise": "Elan",
+    "adresse": "2 Rue Saint-Jacques",
+    "ville": "Bidache",
+    "code_postal": "64520",
+    "latitude_osm": "43.48239970",
+    "longitude_osm": "-1.14347820",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64520002",
+    "nom_normalise": "Intermarché",
+    "adresse": "ROUTE DE CAME",
+    "ville": "Bidache",
+    "code_postal": "64520",
+    "latitude_osm": "43.48405890",
+    "longitude_osm": "-1.13751540",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64530002",
+    "nom_normalise": "Intermarché",
+    "adresse": "ZA Le Pey",
+    "ville": "Pontacq",
+    "code_postal": "64530",
+    "latitude_osm": "43.19270310",
+    "longitude_osm": "-0.12399050",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64530004",
+    "nom_normalise": "Total",
+    "adresse": "AUTOROUTE A64 AIRE DE PYRÉNÉES - AIRE DES PYRÉNÉES",
+    "ville": "Ger",
+    "code_postal": "64530",
+    "latitude_osm": "43.23016110",
+    "longitude_osm": "-0.07923660",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64570002",
+    "nom_normalise": "Intermarché",
+    "adresse": "QUARTIER MOUILIA",
+    "ville": "Aramits",
+    "code_postal": "64570",
+    "latitude_osm": "43.12372015",
+    "longitude_osm": "-0.72443949",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64600002",
+    "nom_normalise": "Carrefour",
+    "adresse": "Boulevard du B.A.B.",
+    "ville": "Anglet",
+    "code_postal": "64600",
+    "latitude_osm": "43.48617380",
+    "longitude_osm": "-1.50134950",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64600007",
+    "nom_normalise": "TotalEnergies",
+    "adresse": "1 BIS RUE DU PALOUMET",
+    "ville": "Anglet",
+    "code_postal": "64600",
+    "latitude_osm": "43.49245590",
+    "longitude_osm": "-1.53233390",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64600009",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "77 Avenue de bayonne",
+    "ville": "Bayonne",
+    "code_postal": "64600",
+    "latitude_osm": "43.48383110",
+    "longitude_osm": "-1.50147930",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64604001",
+    "nom_normalise": "E.Leclerc",
+    "adresse": "Boulevard du B.A.B.BP 423",
+    "ville": "Anglet",
+    "code_postal": "64600",
+    "latitude_osm": "43.49311595",
+    "longitude_osm": "-1.51828190",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64700001",
+    "nom_normalise": "TotalEnergies",
+    "adresse": "31 Rue du Capitaine Pellot",
+    "ville": "Urrugne",
+    "code_postal": "64700",
+    "latitude_osm": "43.34691850",
+    "longitude_osm": "-1.76658462",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64780001",
+    "nom_normalise": "E. Leclerc",
+    "adresse": "Quartier Gahardou Sud",
+    "ville": "Ossès",
+    "code_postal": "64780",
+    "latitude_osm": "43.23439680",
+    "longitude_osm": "-1.29652830",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64800003",
+    "nom_normalise": "Elan",
+    "adresse": "59 Avenue du Pic du Midi",
+    "ville": "Igon",
+    "code_postal": "64800",
+    "latitude_osm": "43.15209200",
+    "longitude_osm": "-0.22496220",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64800005",
+    "nom_normalise": "Intermarché",
+    "adresse": "Avenue de la Gare",
+    "ville": "Coarraze",
+    "code_postal": "64800",
+    "latitude_osm": "43.17496515",
+    "longitude_osm": "-0.23423259",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64800007",
+    "nom_normalise": "Super U",
+    "adresse": "132 Rue des Pyrénées",
+    "ville": "Bénéjacq",
+    "code_postal": "64800",
+    "latitude_osm": "43.18644990",
+    "longitude_osm": "-0.23979970",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64990001",
+    "nom_normalise": "Total",
+    "adresse": "RELAIS DES HIRONDELLES",
+    "ville": "Saint-Pierre-d'Irube",
+    "code_postal": "64990",
+    "latitude_osm": "43.47725438",
+    "longitude_osm": "-1.45711666",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  },
+  {
+    "id_station_officiel": "64990002",
+    "nom_normalise": "Intermarché",
+    "adresse": "Chemin Churrieta",
+    "ville": "Urcuit",
+    "code_postal": "64990",
+    "latitude_osm": "43.48718849",
+    "longitude_osm": "-1.35727505",
+    "source_enrichissement": "OpenStreetMap via Carburants.chiffrex.fr"
+  }
+]

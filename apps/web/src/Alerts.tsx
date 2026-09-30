@@ -37,7 +37,7 @@ async function enableDevice(email:string){
 export function DevicePanel({me}:{me:Me}){
  const client=useQueryClient();const [current,setCurrent]=useState<string|null>(()=>localStorage.getItem(`trajetico_device:${me.email}`));
  const [permission,setPermission]=useState(()=>supported()?Notification.permission:'default');
- const [error,setError]=useState('');const [busy,setBusy]=useState(false);
+ const [error,setError]=useState('');const [busy,setBusy]=useState(false);const [testMessage,setTestMessage]=useState('');
  async function register(sub:PushSubscription){const json=sub.toJSON();const result=await alertRequest<{id:string}>('/devices','POST',{endpoint:sub.endpoint,keys:json.keys,deviceLabel:deviceLabel()});localStorage.setItem(`trajetico_device:${me.email}`,result.id);setCurrent(result.id);await client.invalidateQueries({queryKey:['alerts-me']});}
  useEffect(()=>{
   if(!supported()||Notification.permission!=='granted')return;
@@ -55,10 +55,23 @@ export function DevicePanel({me}:{me:Me}){
    setCurrent(await enableDevice(me.email));setPermission(Notification.permission);await client.invalidateQueries({queryKey:['alerts-me']});
   }catch(e){setError(e instanceof Error?e.message:'Activation impossible.');}finally{setBusy(false);}
  }
+ async function testNotification(){
+  if(busy)return;setBusy(true);setError('');setTestMessage('');
+  try{
+   if(!supported()||Notification.permission!=='granted')throw new Error('Autorisez les notifications sur cet appareil avant de lancer le test.');
+   // Resolve the actual browser subscription, not a possibly stale local device id.
+   const registration=await navigator.serviceWorker.getRegistration();const sub=await registration?.pushManager.getSubscription();
+   if(!sub)throw new Error('Réactivez les notifications sur cet appareil avant de lancer le test.');
+   const device=await alertRequest<{id:string}>('/devices','POST',{endpoint:sub.endpoint,keys:sub.toJSON().keys,deviceLabel:deviceLabel()});
+   localStorage.setItem(`trajetico_device:${me.email}`,device.id);setCurrent(device.id);
+   const result=await alertRequest<{message:string}>(`/devices/${device.id}/test`,'POST');setTestMessage(result.message);
+  }catch(e){setError((e as Error).message);}finally{setBusy(false);await client.invalidateQueries({queryKey:['alerts-me']});}
+ }
  async function revoke(id:string){setBusy(true);setError('');try{await alertRequest(`/devices/${id}/revoke`,'POST');if(id===current&&supported()){const r=await navigator.serviceWorker.getRegistration();const sub=await r?.pushManager.getSubscription();await sub?.unsubscribe();}await client.invalidateQueries({queryKey:['alerts-me']});}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  useEffect(()=>{setCurrent(localStorage.getItem(`trajetico_device:${me.email}`));if(supported())setPermission(Notification.permission);},[me.devices,me.email]);
  const active=current&&me.devices.some(d=>d.id===current&&!d.revokedAt);
  return <section><h2>Mes appareils</h2>{!supported()?<p>Les notifications push ne sont pas disponibles sur ce navigateur. <a href="/notifications">Voir les instructions iPhone / iPad et autres appareils</a>, ou <a href="/?digest=open">utiliser le digest email</a>.</p>:permission==='denied'?<p>Les notifications sont bloquées dans les réglages de votre navigateur. <a href="/notifications">Comment les autoriser</a></p>:active&&permission==='granted'?<p role="status">Notifications activées sur cet appareil</p>:<button type="button" disabled={busy} onClick={activate}>Activer les notifications</button>}
+ {supported()&&permission==='granted'&&active&&<button type="button" disabled={busy} onClick={testNotification}>{busy?'Envoi…':'Tester les notifications'}</button>}{testMessage&&<p role="status">{testMessage}</p>}
  {me.devices.map(d=><div className="alert-device" key={d.id}><strong>{d.deviceLabel}{d.id===current?' (cet appareil)':''}</strong><p>{d.revokedAt?'Notifications désactivées':'Notifications actives'}</p>{!d.revokedAt&&<button type="button" disabled={busy} onClick={()=>revoke(d.id)}>Désactiver cet appareil</button>}</div>)}{error&&<p role="alert">{error}</p>}<p><a href="/notifications">Comment fonctionnent les notifications ?</a></p></section>;
 }
 const fuels:FuelCode[]=['GAZOLE','SP95','SP98','E10','E85','GPLC'];
@@ -107,7 +120,7 @@ export function AlertsPage(){
  <p><a href="/">Choisir une station pour créer une alerte</a></p>{!me.data.rules.length&&<p>Aucune alerte. Ouvrez une station sur la carte pour commencer.</p>}
  {Object.entries(groups).map(([stationId,rules])=><section key={stationId}><h2><a href={`/?station=${stationId}`}>{rules![0].stationName}</a></h2>{fuels.map(fuel=>{const rows=rules!.filter(r=>r.fuelCode===fuel);return rows.length?<section key={fuel}><h3>{rows[0].fuelLabel}</h3>{rows.map(r=><RuleControl key={`${r.id}-${r.priceThresholdMilliEur}-${r.status}-${r.frequency}`} rule={r} busy={action.isPending||preparing} onSave={(frequency,status,threshold)=>save(r,frequency,status,threshold)}/>)}</section>:null;})}</section>)}
  <button disabled={action.isPending||!me.data.rules.some(r=>r.status==='ACTIVE')} onClick={()=>action.mutate({path:'/disable-all'})}>Désactiver toutes les alertes</button><p>Le digest email et les appareils se gèrent séparément.</p><DevicePanel me={me.data}/>
- </>}{pushNotice&&<p role="alert">{pushNotice} <a href="/notifications">Voir les instructions</a></p>}{action.isError&&<p role="alert">{action.error.message}</p>}<p><a href="/notifications">Comment fonctionnent les alertes Trajetico ?</a></p></main>;
+ </>}{pushNotice&&<p role="alert">{pushNotice} <a href="/notifications">Voir les instructions</a></p>}{action.isError&&<p role="alert">{action.error.message}</p>}</main>;
 }
 export function NotificationsPage(){
  const ios=/iPhone|iPad/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);const android=/Android/.test(navigator.userAgent);

@@ -4,12 +4,14 @@ const assert=require('node:assert/strict');const {randomUUID,randomBytes}=requir
 const {AlertsService,ruleSchema,pushSchema,allowedPushEndpoint}=require('./dist/alerts/alerts.service');
 const {SubscriberService,hashToken,SESSION_COOKIE}=require('./dist/alerts/subscriber.service');
 const {AlertProcessor}=require('./dist/alerts/alert-processor.service');
+const {TestPushService}=require('./dist/alerts/test-push.service');
 const {AlertsController}=require('./dist/alerts/alerts.module');
 (async()=>{
  const pool=new Pool({connectionString:process.env.DATABASE_URL}),c=await pool.connect();
  const query=(sql,args)=>c.query(sql==='BEGIN'?'SAVEPOINT write_op':sql==='COMMIT'?'RELEASE SAVEPOINT write_op':sql==='ROLLBACK'?'ROLLBACK TO SAVEPOINT write_op':sql,args);
  const proxy={query,release(){}};const db={pool:{query,connect:async()=>proxy}};const emails=[],pushes=[];let fail=0;
  const identity=new SubscriberService(db,{send:async(message)=>{emails.push(message);return randomUUID();}});
+ const testMessages=[];let testFailure=0;const testPush=new TestPushService(db,{send:async(device,payload)=>{if(testFailure)throw {statusCode:testFailure};testMessages.push({device,payload});}});
  const alerts=new AlertsService(db);const processor=new AlertProcessor(db,{send:async(s,p)=>{pushes.push({endpoint:s.endpoint,p});if(fail)throw {statusCode:fail};}});
  try{
   await c.query('BEGIN');await c.query('UPDATE fuel_events SET processed_at=now() WHERE processed_at IS NULL');await c.query("UPDATE push_deliveries SET status='FAILED' WHERE status='PENDING'");
@@ -27,6 +29,13 @@ const {AlertsController}=require('./dist/alerts/alerts.module');
   const devices=[];for(let i=0;i<2;i++){const body={endpoint:`https://fcm.googleapis.com/fcm/send/${randomUUID()}`,keys:{p256dh:randomBytes(65).toString('base64url'),auth:randomBytes(16).toString('base64url')},deviceLabel:`Test ${i}`};assert.ok(pushSchema.safeParse(body).success);const d=await alerts.register(sub.id,body);assert.equal((await alerts.register(sub.id,body)).id,d.id);await assert.rejects(()=>alerts.register(other,body));devices.push(d.id);}
   assert.equal(allowedPushEndpoint('https://127.0.0.1/test'),false);assert.equal(allowedPushEndpoint('https://fcm.googleapis.com.evil.test/'),false);
   await assert.rejects(()=>alerts.revoke(other,devices[0]));assert.equal((await alerts.devices(other)).length,0);
+  await assert.rejects(()=>testPush.send(other,devices[0]),e=>e.getStatus()===404);
+  const testResult=await testPush.send(sub.id,devices[0]);assert.ok(testResult.message);assert.equal(testMessages.length,1);assert.ok(testMessages[0].payload.title.includes('test'));assert.equal(await count('notification_events'),0);
+  await assert.rejects(()=>testPush.send(sub.id,devices[1]),e=>e.getStatus()===429);
+  await c.query('SAVEPOINT test_expired');
+  await c.query("UPDATE subscriber_rate_limits SET window_started_at=now()-interval '30 seconds' WHERE key=$1",['push-test:'+sub.id]);
+  testFailure=410;await assert.rejects(()=>testPush.send(sub.id,devices[0]),e=>e.getStatus()===503);assert.ok((await alerts.devices(sub.id)).find(d=>d.id===devices[0]).revokedAt);
+  await c.query('ROLLBACK TO SAVEPOINT test_expired');testFailure=0;
   const rule={stationId:station,fuelCode:'SP98',eventType:'PRICE_DROP',priceThresholdMilliEur:2000,frequency:'RECURRING',status:'ACTIVE'};assert.ok(ruleSchema.safeParse(rule).success);for(const threshold of [undefined,null,0,-1,1.5,2147483648])assert.equal(ruleSchema.safeParse({...rule,priceThresholdMilliEur:threshold}).success,false);
   const priceRule=await alerts.save(sub.id,rule);assert.equal((await alerts.save(sub.id,rule)).id,priceRule.id);
   await alerts.save(sub.id,{...rule,eventType:'FUEL_AVAILABLE',frequency:'ONCE'});
@@ -65,12 +74,12 @@ const {AlertsController}=require('./dist/alerts/alerts.module');
   await c.query(`INSERT INTO digest_subscriptions(email,fuel_type_id,center,radius_meters,unsubscribe_token_hash,unsubscribe_nonce,verified_at,status) VALUES($1,$2,ST_SetSRID(ST_MakePoint(0,0),4326)::geography,5000,$3,$4,now(),'ACTIVE')`,[email,fuel,randomUUID(),randomUUID()]);
   assert.equal((await c.query('SELECT subscriber_id FROM digest_subscriptions WHERE email=$1',[email])).rows[0].subscriber_id,sub.id);
   await c.query("UPDATE digest_subscriptions SET status='UNSUBSCRIBED' WHERE email=$1",[email]);assert.equal((await alerts.list(sub.id)).find(r=>r.eventType==='PRICE_DROP').status,'COMPLETED');
-  const controller=new AlertsController(identity,alerts);assert.throws(()=>controller.login({email},'test','https://evil.test'));await assert.rejects(()=>controller.me());
+  const controller=new AlertsController(identity,alerts,testPush);assert.throws(()=>controller.login({email},'test','https://evil.test'));await assert.rejects(()=>controller.me());
   await identity.logout(cookie);await assert.rejects(()=>identity.current(cookie));
   const expired=randomBytes(32).toString('base64url');await c.query("INSERT INTO subscriber_magic_links(token_hash,subscriber_id,expires_at) VALUES($1,$2,now())",[hashToken(expired),sub.id]);await assert.rejects(()=>identity.verify(expired));
   // Exercise actual Nest routing, authentication and cookie flags without background jobs.
   const {Module}=require('@nestjs/common');const {NestFactory}=require('@nestjs/core');
-  class TestModule{};Module({controllers:[AlertsController],providers:[{provide:SubscriberService,useValue:identity},{provide:AlertsService,useValue:alerts}]})(TestModule);
+  class TestModule{};Module({controllers:[AlertsController],providers:[{provide:SubscriberService,useValue:identity},{provide:AlertsService,useValue:alerts},{provide:TestPushService,useValue:testPush}]})(TestModule);
   const app=await NestFactory.create(TestModule,{logger:false});await app.listen(0,'127.0.0.1');
   try{
    const url=await app.getUrl();const origin=process.env.FRONTEND_ORIGIN||'http://localhost:5173';
