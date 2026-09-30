@@ -5,7 +5,7 @@ self.addEventListener('push',event=>{
 });
 self.addEventListener('notificationclick',event=>{
  event.notification.close();
- const url=new URL('/',self.location.origin);
+ const url=new URL('/app',self.location.origin);
  if(event.notification.data?.stationId)url.searchParams.set('station',event.notification.data.stationId);
  if(event.notification.data?.fuelCode)url.searchParams.set('fuel',event.notification.data.fuelCode);
  event.waitUntil((async()=>{

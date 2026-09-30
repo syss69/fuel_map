@@ -178,3 +178,19 @@ Update: at the user's request the distance criterion is now strictly <200m, with
 
 
 The device panel provides `Tester les notifications`: authenticated `POST /api/v1/alerts/devices/:id/test` sends a real Web Push only to the current owned, active device. Tests are limited to one per subscriber per 30 seconds and do not modify alert rules or create fuel events. Expired subscriptions are revoked on 404/410. Success means provider acceptance, not guaranteed OS display. Tests use a fake sender and roll back database changes.
+
+## Frontend routes and deployment
+
+`/` is the public landing; `/app` is the existing map and installed PWA start URL. `/mes-alertes` and `/notifications` remain unchanged. Digest links (`/?digest=verify#token`, `/?digest=unsubscribe#token`) and magic links (`/mes-alertes#token`) keep their existing behavior. Legacy `/?station=…&fuel=…` and `/?digest=open` links normalize to `/app`, preserving query and fragment. New notification clicks open `/app` directly.
+
+The existing entry-point routing is retained without another router dependency. The map loads lazily. Do not change PUBLIC_APP_URL solely for this frontend move: existing backend-generated links remain supported.
+
+Production hosting must serve `apps/web/dist/index.html` for frontend paths, including direct requests and refreshes. Keep the existing `/api` reverse proxy separate. In the existing Nginx server block, with root pointing to the frontend dist directory:
+
+```nginx
+location / {
+    try_files $uri $uri/ /index.html;
+}
+```
+
+Keep `/sw.js` served as JavaScript without immutable caching and retain its root scope for existing subscriptions. No production server configuration is checked into this repository: apply the SPA fallback to the actual host on deployment. Vite development and preview servers already support it.

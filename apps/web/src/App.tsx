@@ -152,7 +152,10 @@ export default function App() {
         <div>
           <h1><img className="brand-logo" src="/brand/trajetico-logo-full.png" alt="TrajetIco" width="2172" height="724" /></h1>
           <p>Prix des stations autour de Pau et dans le département</p>
-          <a href="/mes-alertes">Mes alertes</a>
+          <nav className="map-navigation" aria-label="Navigation principale">
+            <a href="/" aria-label="Retour à l’accueil">← Accueil</a>
+            <a href="/mes-alertes">Mes alertes</a>
+          </nav>
         </div>
       </div>
       {!pickingFavorite && <fieldset className={`fuel-filter${filtersExpanded ? '' : ' fuel-filter-collapsed'}`}>

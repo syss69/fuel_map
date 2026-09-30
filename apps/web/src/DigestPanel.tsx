@@ -74,6 +74,6 @@ export function DigestLink({action}:{action:'verify'|'unsubscribe'}) {
       {!token && <p>Ouvrez le lien reçu par email.</p>}
       {mutation.isError && <p role="alert">{mutation.error.message}</p>}
     </>}
-    <p><a href="/">Ouvrir Trajetico</a></p>
+    <p><a href="/app">Ouvrir Trajetico</a></p>
   </section></main>;
 }
