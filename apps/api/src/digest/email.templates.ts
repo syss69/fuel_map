@@ -24,6 +24,7 @@ export function verificationEmail(from: string, to: string, url: string, summary
 }
 export function digestEmail(snapshot: DigestSnapshot, unsubscribeUrl: string): EmailMessage {
   const {top, favorite, fuel, date, appUrl, from, recipient} = snapshot;
+  const manageUrl = new URL('/mes-alertes',appUrl).toString();
   const heading = `Les meilleurs prix du ${fuel} — ${date}`;
   const lines = top.map((s,i)=>`${i+1}. ${s.name}\n${[s.address,s.city].filter(Boolean).join(', ')}\n${price(s.price)} · ${(s.distance/1000).toFixed(1).replace('.',',')} km`);
   const favoriteStatus = !favorite ? '' : favorite.availability === 'AVAILABLE' ? 'Disponible' : favorite.availability === 'UNKNOWN' ? 'Disponibilité inconnue' : 'Carburant actuellement indisponible';
@@ -31,7 +32,7 @@ export function digestEmail(snapshot: DigestSnapshot, unsubscribeUrl: string): E
   const empty = 'Aucune station avec un prix officiel disponible dans votre rayon ce matin.';
   const favoriteText = favorite ? `Votre station favorite\n${favorite.name}\n${[favorite.address,favorite.city].filter(Boolean).join(', ')}\n${price(favorite.price)}\n${favoriteStatus}\n${freshness}` : '';
   return {from, to:[recipient], subject:`Trajetico — Votre point carburant du ${date}`,
-    html:layout(heading, `<p>Bonjour,</p><p>Voici les prix officiels disponibles autour de votre zone ce matin.</p>${lines.length ? lines.map(l=>`<p style="padding:14px 0;border-bottom:1px solid #dbe5de;line-height:1.6">${escape(l).replace(/\n/g,'<br>')}</p>`).join('') : `<p>${empty}</p>`}${favorite ? `<h2 style="font-size:18px">Votre station favorite</h2><p style="line-height:1.6">${escape(favoriteText.split('\n').slice(1).join('\n')).replace(/\n/g,'<br>')}</p>` : ''}<p style="font-size:12px;color:#64766f">Source : données officielles. La disponibilité et les prix peuvent évoluer.</p>${button(appUrl,'Ouvrir Trajetico')}<p><a href="${escape(unsubscribeUrl)}" style="color:#64766f">Se désabonner</a></p>`),
-    text:`Bonjour,\n${heading}\n\n${lines.join('\n\n') || empty}\n\n${favoriteText}\n\nSource : données officielles. La disponibilité et les prix peuvent évoluer.\nOuvrir Trajetico : ${appUrl}\nSe désabonner : ${unsubscribeUrl}`,
+    html:layout(heading, `<p>Bonjour,</p><p>Voici les prix officiels disponibles autour de votre zone ce matin.</p>${lines.length ? lines.map(l=>`<p style="padding:14px 0;border-bottom:1px solid #dbe5de;line-height:1.6">${escape(l).replace(/\n/g,'<br>')}</p>`).join('') : `<p>${empty}</p>`}${favorite ? `<h2 style="font-size:18px">Votre station favorite</h2><p style="line-height:1.6">${escape(favoriteText.split('\n').slice(1).join('\n')).replace(/\n/g,'<br>')}</p>` : ''}<p style="font-size:12px;color:#64766f">Source : données officielles. La disponibilité et les prix peuvent évoluer.</p>${button(appUrl,'Ouvrir Trajetico')}<p><a href="${escape(manageUrl)}">Gérer mes alertes</a></p><p><a href="${escape(unsubscribeUrl)}" style="color:#64766f">Se désabonner</a></p>`),
+    text:`Bonjour,\n${heading}\n\n${lines.join('\n\n') || empty}\n\n${favoriteText}\n\nSource : données officielles. La disponibilité et les prix peuvent évoluer.\nOuvrir Trajetico : ${appUrl}\nGérer mes alertes : ${manageUrl}\nSe désabonner : ${unsubscribeUrl}`,
   };
 }
