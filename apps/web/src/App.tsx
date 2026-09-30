@@ -27,10 +27,12 @@ export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
   const markersRef = useRef<Marker[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const linkedStation = useRef(new URLSearchParams(location.search).get('station'));
+  const linkedFuel = new URLSearchParams(location.search).get('fuel');
+  const [selectedId, setSelectedId] = useState<string | null>(()=>new URLSearchParams(location.search).get('station'));
   const [fuelFilter, setFuelFilter] = useState<FuelCode | ''>('');
   const [filtersExpanded, setFiltersExpanded] = useState(false);
-  const [digestOpen,setDigestOpen]=useState(false);
+  const [digestOpen,setDigestOpen]=useState(()=>new URLSearchParams(location.search).get('digest')==='open');
   const [pickingPoint,setPickingPoint]=useState(false);
   const [pickingFavorite,setPickingFavorite]=useState(false);
   const [digestFavorite,setDigestFavorite]=useState<StationMarker|null>(null);
@@ -46,10 +48,10 @@ export default function App() {
   ), [stations.data, fuelFilter, pickingFavorite]);
 
   useEffect(() => {
-    if (selectedId && !visibleStations.some((station) => station.id === selectedId)) {
+    if (stations.data && selectedId && !visibleStations.some((station) => station.id === selectedId)) {
       setSelectedId(null);
     }
-  }, [selectedId, visibleStations]);
+  }, [selectedId, visibleStations, stations.data]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -69,6 +71,11 @@ export default function App() {
       mapRef.current = null;
     };
   }, []);
+
+  useEffect(()=>{
+    const station=stations.data?.stations.find(s=>s.id===linkedStation.current);
+    if(station&&mapRef.current){mapRef.current.jumpTo({center:[station.lng,station.lat],zoom:13});linkedStation.current=null;}
+  },[stations.data]);
 
   useEffect(()=>{
     const map=mapRef.current;if(!map || !digestOpen || !digestPoint)return;
@@ -126,7 +133,7 @@ export default function App() {
           event.stopPropagation();
           setDigestFavorite(station);
           setPickingFavorite(false);
-        } else if(!pickingRef.current)setSelectedId(station.id);
+        } else if(!pickingRef.current){history.replaceState(null,'',location.pathname);setSelectedId(station.id);}
       });
       return new maplibregl.Marker({ element })
         .setLngLat([station.lng, station.lat])
@@ -145,6 +152,7 @@ export default function App() {
         <div>
           <h1><img className="brand-logo" src="/brand/trajetico-logo-full.png" alt="TrajetIco" width="2172" height="724" /></h1>
           <p>Prix des stations autour de Pau et dans le département</p>
+          <a href="/mes-alertes">Mes alertes</a>
         </div>
       </div>
       {!pickingFavorite && <fieldset className={`fuel-filter${filtersExpanded ? '' : ' fuel-filter-collapsed'}`}>
@@ -196,9 +204,10 @@ export default function App() {
               {' (Paris)'}
             </> : 'Aucune synchronisation réussie'}
           </small>
+          <small className="last-update">Noms : <a href="https://www.data.gouv.fr/datasets/referentiel-des-noms-et-enseignes-de-stations-service-enrichi-par-openstreetmap" target="_blank" rel="noopener noreferrer">Chiffrex / © OpenStreetMap</a> (ODbL)</small>
         </div>
       )}
-      {selectedId && <StationCard stationId={selectedId} selectedFuel={fuelFilter} onClose={() => setSelectedId(null)} />}
+      {selectedId && <StationCard stationId={selectedId} selectedFuel={fuelFilter || (fuelOptions.some(f=>f.value===linkedFuel)?linkedFuel as FuelCode:'')} onClose={() => {setSelectedId(null);history.replaceState(null,'',location.pathname);}} />}
     </main>
   );
 }
