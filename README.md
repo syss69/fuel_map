@@ -185,12 +185,13 @@ The device panel provides `Tester les notifications`: authenticated `POST /api/v
 
 The existing entry-point routing is retained without another router dependency. The map loads lazily. Do not change PUBLIC_APP_URL solely for this frontend move: existing backend-generated links remain supported.
 
-Production hosting must serve `apps/web/dist/index.html` for frontend paths, including direct requests and refreshes. Keep the existing `/api` reverse proxy separate. In the existing Nginx server block, with root pointing to the frontend dist directory:
+Production hosting must return the SPA entry point for frontend routes. The checked-in apps/web/Caddyfile provides this fallback, preserves API paths, and serves the service worker without immutable caching.
 
-```nginx
-location / {
-    try_files $uri $uri/ /index.html;
-}
-```
+### Frontend Docker image
 
-Keep `/sw.js` served as JavaScript without immutable caching and retain its root scope for existing subscriptions. No production server configuration is checked into this repository: apply the SPA fallback to the actual host on deployment. Vite development and preview servers already support it.
+Build from the repository root: `docker build -f apps/web/Dockerfile -t trajetico-web .`.
+The image builds Vite with VITE_API_BASE_URL=/api/v1 and serves the output with Caddy. API requests go to api:3000; both containers must share a Docker network and the backend must have the name/alias api.
+
+Local default: HTTP on port 80. Example: `docker run --rm -p 8080:80 trajetico-web` (API calls require the shared network described above).
+
+Production: pass SITE_ADDRESS=trajetico.space (replace with your hostname, without http://), point the domain DNS to the VPS and publish ports 80:80 and 443:443. Optionally publish 443:443/udp for HTTP/3. Caddy obtains and renews HTTPS certificates automatically. Persist named volumes at /data (certificates and keys) and /config. Set API FRONTEND_ORIGIN and PUBLIC_APP_URL to the public HTTPS origin; configure TRUST_PROXY_HOPS=1 when Caddy is the only proxy and API is accessible only on the private Docker network. Do not pass the API secrets to the web container. Local HTTP does not trigger public certificate issuance.

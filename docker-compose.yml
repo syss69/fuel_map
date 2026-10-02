@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgis/postgis:18-3.6
+    container_name: fuel-map-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fuel_map
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d fuel_map"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  api:
+    build: 
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: trajetico-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    expose:
+      - "3000"
+  
+  web: 
+    build: 
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: trajetico-web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      SITE_ADDRESS: :80
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:
