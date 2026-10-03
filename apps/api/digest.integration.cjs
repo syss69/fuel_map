@@ -85,9 +85,29 @@ const {digestEmail}=require('./dist/digest/email.templates');
   assert.equal(emptySnapshot.top.length,0);assert.equal(emptySnapshot.favorite.id,stationIds[6]);
   assert.ok(digestEmail(emptySnapshot,'https://example.test/unsubscribe').text.includes('Aucune station'));
   await execute('ROLLBACK TO SAVEPOINT empty_zone');
+  for(const station of [...snapshot.top,snapshot.favorite]){
+    const geo=(await execute('SELECT ST_Y(location::geometry) lat,ST_X(location::geometry) lng FROM stations WHERE id=$1',[station.id])).rows[0];
+    assert.equal(station.lat,geo.lat);assert.equal(station.lng,geo.lng);
+  }
   const rendered=digestEmail(snapshot,'https://example.test/unsubscribe');
   assert.ok(rendered.html.includes('&lt;script&gt;'));assert.ok(!rendered.html.includes('<script>'));
   assert.ok(rendered.text.includes('Prix non disponible'));assert.ok(rendered.text.includes('Carburant actuellement indisponible'));
+  assert.equal((rendered.html.match(/Ouvrir dans/g)||[]).length,4);
+  assert.equal((rendered.text.match(/Google Maps :/g)||[]).length,4);
+  const sample={...snapshot.top[0],lat:43.3,lng:-0.37,name:'A & "B" <script>'};
+  const example=digestEmail({...snapshot,top:[sample],favorite:null},'https://example.test/unsubscribe');
+  for(const label of ['Google Maps','Apple Plans','Waze']){
+    const url=new URL(example.text.split(label+' : ')[1].split('\n')[0]);
+    assert.equal(url.protocol,'https:');assert.equal(url.searchParams.get(label==='Google Maps'?'query':'ll'),'43.3,-0.37');
+    assert.equal(url.searchParams.has('navigate'),false);
+    if(label==='Apple Plans')assert.equal(url.searchParams.get('q'),sample.name);
+  }
+  for(const coords of [{},{lat:null,lng:0},{lat:91,lng:0},{lat:0,lng:181},{lat:NaN,lng:0}]){
+    const {lat,lng,...rest}=sample;
+    const result=digestEmail({...snapshot,top:[{...rest,...coords}],favorite:null},'https://example.test/unsubscribe');
+    assert.ok(!result.html.includes('Ouvrir dans'));assert.ok(result.text.includes(sample.name));
+  }
+  assert.ok(!digestEmail({...snapshot,top:[],favorite:null},'https://example.test/unsubscribe').html.includes('Ouvrir dans'));
   failAfterAccept=true;await service.runMorning();
   let delivery=(await execute("SELECT * FROM email_deliveries WHERE subscription_id=$1 AND type='MORNING_DIGEST'",[sub.id])).rows[0];
   assert.equal(delivery.status,'RETRY');const savedPayload=JSON.stringify(delivery.payload);
