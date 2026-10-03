@@ -112,7 +112,7 @@ export class DigestService {
   async snapshot(client:PoolClient, subscriptionId:string, localDate:string):Promise<DigestSnapshot> {
     const settings=this.settings();
     const info=(await client.query<{email:string;label:string;favorite_station_id:string|null}>(`SELECT s.email,ft.label,s.favorite_station_id FROM digest_subscriptions s JOIN fuel_types ft ON ft.id=s.fuel_type_id WHERE s.id=$1`,[subscriptionId])).rows[0];
-    const fields=`s.id,COALESCE(s.display_name,'Station-service') AS name,s.address,s.city,
+    const fields=`ST_Y(s.location::geometry) AS lat,ST_X(s.location::geometry) AS lng,s.id,COALESCE(s.display_name,'Station-service') AS name,s.address,s.city,
       f.price_milli_eur AS price,COALESCE(f.availability::text,'UNKNOWN') AS availability,ST_Distance(s.location,d.center) AS distance,
       f.source_price_updated_at AS source_updated_at,s.last_seen_at`;
     const top=(await client.query<DigestStation>(`SELECT ${fields} FROM digest_subscriptions d
