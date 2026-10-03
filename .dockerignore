@@ -1,0 +1,8 @@
+**/dist
+**/dist-cli
+.git
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules
+**/*.tsbuildinfo

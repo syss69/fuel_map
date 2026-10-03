@@ -1,3 +1,4 @@
+import { StationAlerts } from './Alerts';
 import { useQuery } from '@tanstack/react-query';
 import { fetchStation, Availability } from './api';
 import type { FuelCode } from './api';
@@ -65,6 +66,7 @@ export function StationCard({ stationId, selectedFuel, onClose }: Props) {
               </div>;
             })}
           </div>
+          <StationAlerts key={`alerts-${stationId}`} stationId={stationId}/>
           <CommunityPanel key={`community-${stationId}`} station={detail.data} reporterId={reporterId} />
           <QueuePanel key={stationId} stationId={stationId} reporterId={reporterId} queue={detail.data.queue} />
         </>
