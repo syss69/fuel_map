@@ -183,7 +183,13 @@ button { font: inherit; }
 .digest-panel { position:absolute; z-index:5; right:18px; bottom:18px; width:min(420px,calc(100vw - 20px)); max-height:calc(100dvh - 36px); display:flex; flex-direction:column; background:#fffef9; border-radius:18px; box-shadow:0 10px 40px #18382f44; }
 .digest-header { display:flex; align-items:center; gap:12px; padding:14px 18px; }
 .digest-header h2 { margin:0; font-size:19px; flex:1; }
-.digest-header button { width:44px; height:44px; border:0; border-radius:50%; background:#eff2ec; font-size:24px; cursor:pointer; }
+.digest-header button,.digest-header > a { width:44px; height:44px; flex-shrink:0; display:grid; place-items:center; padding:0; border:0; border-radius:50%; background:#eff2ec; color:inherit; text-decoration:none; font-size:24px; cursor:pointer; }
+.digest-summary { display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px 16px; }
+.digest-summary dt { font-weight:600; }
+.digest-summary dd { margin:0; overflow-wrap:anywhere; }
+.digest-actions { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+.digest-body input[readonly] { background:#edf2ef; color:#44594f; }
+.digest-body button + button { margin:4px; }
 .digest-body { overflow:auto; padding:0 18px 18px; font-size:14px; }
 .digest-body fieldset { border:0; padding:0; margin:0; min-width:0; }
 .digest-body label { display:block; margin:12px 0 5px; font-weight:600; }

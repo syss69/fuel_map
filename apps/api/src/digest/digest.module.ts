@@ -33,5 +33,5 @@ export class DigestScheduler {
   @Cron('*/5 * * * *')
   async run(){try{await this.digest.runMorning();}catch{this.logger.error('Morning digest scheduler failed');}}
 }
-@Module({controllers:[DigestController],providers:[EmailService,DigestService,DigestScheduler]})
+@Module({controllers:[DigestController],providers:[EmailService,DigestService,DigestScheduler],exports:[DigestService]})
 export class DigestModule {}

@@ -5,9 +5,11 @@ import type { Map, Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import mapWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { fetchStations } from './api';
-import type { FuelCode, StationMarker } from './api';
+import type { FuelCode } from './api';
 import { StationCard } from './StationCard';
 import { DigestPanel } from './DigestPanel';
+import { alertRequest } from './alerts-api';
+import type { DigestFavorite, ManagedDigest } from './digest-management';
 
 const PAU: [number, number] = [-0.3708, 43.2951];
 const fuelOptions: Array<{ value: FuelCode | ''; label: string }> = [
@@ -32,14 +34,18 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<string | null>(()=>new URLSearchParams(location.search).get('station'));
   const [fuelFilter, setFuelFilter] = useState<FuelCode | ''>('');
   const [filtersExpanded, setFiltersExpanded] = useState(false);
-  const [digestOpen,setDigestOpen]=useState(()=>new URLSearchParams(location.search).get('digest')==='open');
+  const [digestEditing]=useState(()=>new URLSearchParams(location.search).get('digest')==='edit');
+  const [digestOpen,setDigestOpen]=useState(()=>new URLSearchParams(location.search).get('digest')==='open'||digestEditing);
   const [pickingPoint,setPickingPoint]=useState(false);
   const [pickingFavorite,setPickingFavorite]=useState(false);
-  const [digestFavorite,setDigestFavorite]=useState<StationMarker|null>(null);
+  const [digestFavorite,setDigestFavorite]=useState<DigestFavorite|null>(null);
   const pickingFavoriteRef=useRef(false);
   pickingFavoriteRef.current=pickingFavorite;
   const [digestPoint,setDigestPoint]=useState<{lat:number;lng:number}|null>(null);
   const [digestRadius,setDigestRadius]=useState(10000);
+  const editor=useQuery({queryKey:['digest-editor'],enabled:digestEditing,retry:false,staleTime:0,refetchOnWindowFocus:false,
+    queryFn:async()=>{const me=await alertRequest<{email:string}>('/me');const digest=await alertRequest<ManagedDigest|null>('/digest');return {email:me.email,digest};}});
+  const [editing,setEditing]=useState<{email:string;digest:ManagedDigest}|undefined>();
   const pickingRef=useRef(false);
   pickingRef.current=pickingPoint;
   const stations = useQuery({ queryKey: ['stations'], queryFn: fetchStations, refetchInterval: 60_000 });
@@ -71,6 +77,18 @@ export default function App() {
       mapRef.current = null;
     };
   }, []);
+
+  useEffect(()=>{
+    if(!digestEditing)return;
+    if((editor.error as {status?:number}|null)?.status===401){location.replace('/mes-alertes');return;}
+    if(editor.data&&!editor.data.digest){location.replace('/mes-alertes');return;}
+    if(editor.data?.digest&&!editing){
+      const digest=editor.data.digest;
+      setDigestPoint({lat:digest.lat,lng:digest.lng});setDigestRadius(digest.radiusMeters);
+      setDigestFavorite(digest.favoriteStation);setEditing({email:editor.data.email,digest});
+      mapRef.current?.jumpTo({center:[digest.lng,digest.lat],zoom:10});
+    }
+  },[digestEditing,editor.data,editor.error,editing]);
 
   useEffect(()=>{
     const station=stations.data?.stations.find(s=>s.id===linkedStation.current);
@@ -133,7 +151,7 @@ export default function App() {
           event.stopPropagation();
           setDigestFavorite(station);
           setPickingFavorite(false);
-        } else if(!pickingRef.current){history.replaceState(null,'',location.pathname);setSelectedId(station.id);}
+        } else if(!pickingRef.current&&!digestEditing){history.replaceState(null,'',location.pathname);setSelectedId(station.id);}
       });
       return new maplibregl.Marker({ element })
         .setLngLat([station.lng, station.lat])
@@ -180,12 +198,13 @@ export default function App() {
         </div>
       </fieldset>}
       {!digestOpen && <button className="digest-launcher" type="button" onClick={()=>{setSelectedId(null);setDigestOpen(true);}}>Digest du matin</button>}
-      {digestOpen && <DigestPanel favorite={digestFavorite} initialFuel={fuelFilter} point={digestPoint} picking={pickingPoint} pickingFavorite={pickingFavorite}
+      {digestEditing&&!editing&&<div className="digest-panel"><div className="digest-header"><h2>Mon digest</h2><a href="/mes-alertes" aria-label="Fermer le formulaire">×</a></div><div className="digest-body">{editor.isError?<><p role="alert">{editor.error.message}</p><button onClick={()=>void editor.refetch()}>Réessayer</button></>:<p>Chargement…</p>}</div></div>}
+      {digestOpen && (!digestEditing||editing) && <DigestPanel editing={editing} favorite={digestFavorite} initialFuel={fuelFilter} point={digestPoint} picking={pickingPoint} pickingFavorite={pickingFavorite}
         radius={digestRadius} onRadiusChange={setDigestRadius}
         onPickFavorite={()=>{setSelectedId(null);setPickingFavorite(true);}} onClearFavorite={()=>setDigestFavorite(null)}
         onPick={()=>{setSelectedId(null);setPickingPoint(true);}} onCancelPick={()=>setPickingPoint(false)}
         onCancelFavorite={()=>setPickingFavorite(false)}
-        onClose={()=>{setDigestOpen(false);setPickingPoint(false);setPickingFavorite(false);}} />}
+        onClose={()=>{if(digestEditing){location.assign('/mes-alertes');return;}setDigestOpen(false);setPickingPoint(false);setPickingFavorite(false);}} />}
       {stations.isPending && <div className="map-message">Chargement des stations…</div>}
       {stations.isError && (
         <div className="map-message error">Les stations ne peuvent pas être chargées pour le moment.</div>

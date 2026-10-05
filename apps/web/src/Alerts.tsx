@@ -2,18 +2,16 @@ import { parsePrice } from './community';
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FuelCode } from './api';
-const base=import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api/v1';
+import { alertRequest } from './alerts-api';
+export { alertRequest } from './alerts-api';
+import { DigestManagement } from './DigestManagement';
 export interface Rule {priceThresholdMilliEur:number|null;id:string;stationId:string;stationName:string;fuelCode:FuelCode;fuelLabel:string;eventType:'FUEL_AVAILABLE'|'PRICE_DROP';frequency:'ONCE'|'RECURRING';status:'ACTIVE'|'DISABLED'|'COMPLETED'}
 interface Device {id:string;deviceLabel:string;lastSeenAt:string;revokedAt:string|null}
 interface Me {email:string;rules:Rule[];devices:Device[]}
-export async function alertRequest<T>(path:string,method='GET',body?:unknown):Promise<T>{
- const r=await fetch(`${base}/alerts${path}`,{method,credentials:'include',headers:body?{'Content-Type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined});
- if(!r.ok){const data=await r.json().catch(()=>({}));throw Object.assign(new Error(data.message||'Impossible de charger les alertes.'),{status:r.status});}return r.json();
-}
 function useMe(){return useQuery({queryKey:['alerts-me'],queryFn:()=>alertRequest<Me>('/me'),retry:false,staleTime:0});}
 export function LoginForm(){
  const [email,setEmail]=useState('');const mutation=useMutation({mutationFn:()=>alertRequest<{message:string}>('/login','POST',{email})});
- return <><form onSubmit={e=>{e.preventDefault();mutation.mutate();}}><p>Connectez-vous par email pour gérer vos alertes, sans mot de passe.</p><label>Email<input type="email" required autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} /></label><button disabled={mutation.isPending}>Recevoir un lien</button>{mutation.isSuccess&&<p role="status">{mutation.data.message}</p>}{mutation.isError&&<p role="alert">{mutation.error.message}</p>}</form><PasteLoginLink/></>;
+ return <><form onSubmit={e=>{e.preventDefault();mutation.mutate();}}><p>Connectez-vous par email pour gérer vos alertes, sans mot de passe.</p><label>Email<input type="email" required autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} /></label><button disabled={mutation.isPending}>Recevoir un lien</button>{mutation.isSuccess&&<p role="status">{mutation.data.message} Pensez à vérifier votre dossier « Spam » ou « Courriers indésirables ».</p>}{mutation.isError&&<p role="alert">{mutation.error.message}</p>}</form><PasteLoginLink/></>;
 }
 function PasteLoginLink(){
  const [link,setLink]=useState('');const [error,setError]=useState('');
@@ -117,7 +115,7 @@ export function AlertsPage(){
  const groups=(me.data?.rules??[]).reduce<Record<string,Rule[]>>((all,r)=>{(all[r.stationId]??=[]).push(r);return all;},{});
  return <main className="alerts-page"><a href="/app">← Carte Trajetico</a><h1>Mes alertes</h1>{token&&!verified?<><p>Confirmez la connexion à votre espace d’alertes.</p><button disabled={login.isPending} onClick={()=>login.mutate()}>Accéder à mes alertes</button>{login.isError&&<><p role="alert">{login.error.message}</p><LoginForm/></>}</>:me.isPending?<p>Chargement…</p>:me.isError?(me.error as {status?:number}).status===401?<LoginForm/>:<p role="alert">{me.error.message}</p>:<>
  <p>{me.data.email}</p><button disabled={action.isPending} onClick={()=>action.mutate({path:'/logout'})}>Se déconnecter</button>
- <p><a href="/app">Choisir une station pour créer une alerte</a></p>{!me.data.rules.length&&<p>Aucune alerte. Ouvrez une station sur la carte pour commencer.</p>}
+ <DigestManagement key={me.data.email} email={me.data.email}/><p><a href="/app">Choisir une station pour créer une alerte</a></p>{!me.data.rules.length&&<p>Aucune alerte. Ouvrez une station sur la carte pour commencer.</p>}
  {Object.entries(groups).map(([stationId,rules])=><section key={stationId}><h2><a href={`/app?station=${stationId}`}>{rules![0].stationName}</a></h2>{fuels.map(fuel=>{const rows=rules!.filter(r=>r.fuelCode===fuel);return rows.length?<section key={fuel}><h3>{rows[0].fuelLabel}</h3>{rows.map(r=><RuleControl key={`${r.id}-${r.priceThresholdMilliEur}-${r.status}-${r.frequency}`} rule={r} busy={action.isPending||preparing} onSave={(frequency,status,threshold)=>save(r,frequency,status,threshold)}/>)}</section>:null;})}</section>)}
  <button disabled={action.isPending||!me.data.rules.some(r=>r.status==='ACTIVE')} onClick={()=>action.mutate({path:'/disable-all'})}>Désactiver toutes les alertes</button><p>Le digest email et les appareils se gèrent séparément.</p><DevicePanel me={me.data}/>
  </>}{pushNotice&&<p role="alert">{pushNotice} <a href="/notifications">Voir les instructions</a></p>}{action.isError&&<p role="alert">{action.error.message}</p>}</main>;

@@ -127,7 +127,7 @@ The digest uses only current official `station_fuels`: AVAILABLE, positive price
 After migration and build, run `node apps/api/digest.integration.cjs`. It uses real PostgreSQL with rollback and a recording email provider: verification/expiry, pending reuse, limits, radius/ranking, favorite, timezone boundaries, unsubscribe, and idempotent delivery retries are checked without sending real emails.
 
 ### Digest weekdays
-Subscriptions require `weekdays`: 1–3 distinct ISO weekday numbers (1=Monday, 7=Sunday). The form starts with no days selected. Both scheduler selection and send-time checks use the subscriber's Paris weekday; missed days are not caught up on unselected days. A maximum of three accepted morning digests per Paris calendar week (Monday–Sunday) also applies. Migration 0004 gives existing subscriptions Monday/Wednesday/Friday. To change an existing active subscription, unsubscribe using its email link and subscribe again with the desired days. Verification emails list the selected days. Run the migration before restarting the API.
+Subscriptions require `weekdays`: 1–3 distinct ISO weekday numbers (1=Monday, 7=Sunday). The form starts with no days selected. Both scheduler selection and send-time checks use the subscriber's Paris weekday; missed days are not caught up on unselected days. A maximum of three accepted morning digests per Paris calendar week (Monday–Sunday) also applies. Migration 0004 gives existing subscriptions Monday/Wednesday/Friday. Change an existing subscription in **Mes alertes → Mon digest → Modifier**, after magic-link login. Verification emails list the selected days. Run the migration before restarting the API.
 
 
 ## Web Push fuel alerts
@@ -195,3 +195,21 @@ The image builds Vite with VITE_API_BASE_URL=/api/v1 and serves the output with 
 Local default: HTTP on port 80. Example: `docker run --rm -p 8080:80 trajetico-web` (API calls require the shared network described above).
 
 Production: pass SITE_ADDRESS=trajetico.space (replace with your hostname, without http://), point the domain DNS to the VPS and publish ports 80:80 and 443:443. Optionally publish 443:443/udp for HTTP/3. Caddy obtains and renews HTTPS certificates automatically. Persist named volumes at /data (certificates and keys) and /config. Set API FRONTEND_ORIGIN and PUBLIC_APP_URL to the public HTTPS origin; configure TRUST_PROXY_HOPS=1 when Caddy is the only proxy and API is accessible only on the private Docker network. Do not pass the API secrets to the web container. Local HTTP does not trigger public certificate issuance.
+
+### Manage a digest on the website
+
+After existing magic-link login, `/mes-alertes` displays **Mon digest**. Edit opens `/app?digest=edit` with the saved area, radius, favorite station and weekdays. Saving returns to the summary; cancelling discards the draft. Without a session the editor redirects to login. Email is read-only. A missing subscription links to the existing public creation form.
+
+Cookie-authenticated endpoints (the session cookie is scoped to `/api/v1/alerts`):
+
+- `GET /api/v1/alerts/digest`: subscription or JSON `null`. Fields: `status, fuelCode, lat, lng, radiusMeters, favoriteStationId, weekdays, favoriteStation`. Favorite summary contains `id, displayName, address, city, lat, lng`, or null. No tokens or delivery history.
+- `PUT /api/v1/alerts/digest`: full replacement of `{ fuelCode, lat, lng, radiusMeters, favoriteStationId, weekdays }`. Favorite UUID or explicit null; radius 5000/10000/15000; 1–3 distinct ISO weekdays. Returns the updated subscription.
+- `PUT /api/v1/alerts/digest/status`: `{ status: "ACTIVE" | "UNSUBSCRIBED" }`. Explicit activation also confirms a pending subscription and invalidates its verification token. Returns the updated subscription.
+
+Owner comes only from the session. Writes require an allowed Origin. Missing/expired session: 401; missing subscription on write: 404; invalid settings/favorite: 400; invalid Origin: 403. Editing settings preserves status, ID, verification state, unsubscribe links, last sent time and delivery history. Disabling cancels pending/retry morning deliveries; reactivation never revives cancelled deliveries.
+
+Management, delivery, email verification/unsubscribe and public resubscription use the same per-subscription advisory lock. Settings do not send email immediately or reset daily/weekly quotas. After 08:00 Paris, selecting today can make a new digest eligible at the next scheduled check. Already prepared retry payloads remain unchanged; new settings apply to newly prepared editions.
+
+Checks: build first, then `node apps/api/digest.integration.cjs`, `node apps/api/digest-management.integration.cjs`, and `node apps/api/alerts.integration.cjs`. Tests use PostgreSQL with rollback and fake providers. The management test exercises actual Nest HTTP routes and contention with a separate PostgreSQL connection. `node apps/api/alerts.preview.cjs` provides a local authenticated UI preview with rollback (Enter to stop), never production authentication or external sends.
+
+Deploy by rebuilding API and web. No new migration or database preparation is needed for this milestone.

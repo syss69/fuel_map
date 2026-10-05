@@ -1,27 +1,32 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { digestRequest } from './api';
-import type { FuelCode, StationMarker } from './api';
+import type { FuelCode } from './api';
+import { alertRequest } from './alerts-api';
+import type { DigestFavorite, ManagedDigest } from './digest-management';
 
-export function DigestPanel({favorite,initialFuel,point,radius,onRadiusChange,picking,pickingFavorite,onPickFavorite,onClearFavorite,onCancelFavorite,onPick,onCancelPick,onClose}: {
+export function DigestPanel({editing,favorite,initialFuel,point,radius,onRadiusChange,picking,pickingFavorite,onPickFavorite,onClearFavorite,onCancelFavorite,onPick,onCancelPick,onClose}: {
+  editing?:{digest:ManagedDigest;email:string};
   radius:number;onRadiusChange:(radius:number)=>void;
-  favorite:StationMarker|null;initialFuel:FuelCode|'';point:{lat:number;lng:number}|null;picking:boolean;
+  favorite:DigestFavorite|null;initialFuel:FuelCode|'';point:{lat:number;lng:number}|null;picking:boolean;
   pickingFavorite:boolean;onPickFavorite:()=>void;onClearFavorite:()=>void;onCancelFavorite:()=>void;
   onPick:()=>void;onCancelPick:()=>void;onClose:()=>void;
 }) {
-  const [email,setEmail]=useState('');
-  const [weekdays,setWeekdays]=useState<number[]>([]);
-  const [fuel,setFuel]=useState<FuelCode>(initialFuel || 'GAZOLE');
-  const mutation=useMutation({mutationFn:()=>digestRequest('',{
-    email,fuelCode:fuel,lat:point!.lat,lng:point!.lng,radiusMeters:radius,favoriteStationId:favorite?.id ?? null,weekdays,
-  })});
+  const [email,setEmail]=useState(editing?.email ?? '');
+  const [weekdays,setWeekdays]=useState<number[]>(editing?.digest.weekdays ?? []);
+  const [fuel,setFuel]=useState<FuelCode>(editing?.digest.fuelCode || initialFuel || 'GAZOLE');
+  const mutation=useMutation({mutationFn:async()=>{
+    const settings={fuelCode:fuel,lat:point!.lat,lng:point!.lng,radiusMeters:radius,favoriteStationId:favorite?.id ?? null,weekdays};
+    if(editing){await alertRequest('/digest','PUT',settings);return {message:'Modifications enregistrées.'};}
+    return digestRequest('',{email,...settings});
+  },onSuccess:()=>{if(editing)location.assign('/mes-alertes?digest=saved');}});
   if(picking)return <div className="digest-pick-hint" role="status">Touchez la carte pour choisir votre zone.<button type="button" onClick={onCancelPick}>Annuler</button></div>;
   if(pickingFavorite)return <div className="digest-pick-hint" role="status">Touchez une station sur la carte pour la choisir comme favorite. Toutes les stations sont affichées.<button type="button" onClick={onCancelFavorite}>Annuler</button></div>;
   return <section className="digest-panel" aria-label="Digest du matin">
-    <div className="digest-header"><h2>Votre point carburant du matin</h2><button type="button" onClick={onClose} aria-label="Fermer le formulaire">×</button></div>
+    <div className="digest-header"><h2>{editing?'Modifier mon digest':'Votre point carburant du matin'}</h2><button type="button" disabled={mutation.isPending} onClick={onClose} aria-label="Fermer le formulaire">×</button></div>
     <div className="digest-body">
       <p>Les 3 stations les moins chères autour de votre zone, les jours choisis à <strong>08:00, heure de Paris</strong>.</p>
-      {mutation.isSuccess ? <p role="status">{mutation.data.message} Pensez à vérifier vos courriers indésirables.</p> :
+      {mutation.isSuccess ? <p role="status">{mutation.data.message} Pensez à vérifier votre dossier « Spam » ou « Courriers indésirables ».</p> :
       <form onSubmit={e=>{e.preventDefault();if(point && weekdays.length>0)mutation.mutate();}}>
         <fieldset disabled={mutation.isPending}>
           <label>Carburant<select value={fuel} onChange={e=>setFuel(e.target.value as FuelCode)}>
@@ -37,7 +42,7 @@ export function DigestPanel({favorite,initialFuel,point,radius,onRadiusChange,pi
             <button type="button" onClick={onPickFavorite}>{favorite?'Changer de station sur la carte':'Choisir une station sur la carte'}</button>
             {favorite && <button type="button" onClick={onClearFavorite}>Retirer la station favorite</button>}
           </div>
-          <label>Email<input type="email" autoComplete="email" required maxLength={254} value={email} onChange={e=>setEmail(e.target.value)} /></label>
+          <label>Email<input readOnly={Boolean(editing)} type="email" autoComplete="email" required maxLength={254} value={email} onChange={e=>setEmail(e.target.value)} /></label>
           <div role="group" aria-label="Jours de réception">
             <p>Jours de réception — choisissez 1 à 3 jours</p>
             <div className="fuel-filter-options">
@@ -51,11 +56,12 @@ export function DigestPanel({favorite,initialFuel,point,radius,onRadiusChange,pi
             </div>
             <small role="status">{weekdays.length}/3 jours sélectionnés · 08:00, heure de Paris</small>
           </div>
-          <p className="digest-note">Confirmez votre email pour activer l’abonnement. Un seul abonnement par adresse. Désabonnement possible dans chaque email.</p>
-          <button type="submit" disabled={!point || weekdays.length===0 || mutation.isPending}>{mutation.isPending?'Envoi…':'Recevoir le digest'}</button>
+          {editing?<p className="digest-note">Les modifications s’appliquent aux prochains nouveaux digests. Un email déjà préparé conserve son contenu. Enregistrer ne réactive pas un abonnement désactivé.</p>:<p className="digest-note">Confirmez votre email pour activer l’abonnement. Si vous ne trouvez pas le message, vérifiez votre dossier « Spam » ou « Courriers indésirables ». Un seul abonnement par adresse. Désabonnement possible dans chaque email.</p>}
+          <button type="submit" disabled={!point || weekdays.length===0 || mutation.isPending}>{mutation.isPending?'Enregistrement…':editing?'Enregistrer les modifications':'Recevoir le digest'}</button>
+          {editing&&<button type="button" onClick={onClose}>Annuler</button>}
         </fieldset>
       </form>}
-      {mutation.isError && <p role="alert">{mutation.error.message}</p>}
+      {mutation.isError && <p role="alert">{mutation.error.message} {(mutation.error as {status?:number}).status===401&&<a href="/mes-alertes" target="_blank" rel="noopener noreferrer">Reconnectez-vous dans un nouvel onglet, puis réessayez ici.</a>}</p>}
     </div>
   </section>;
 }

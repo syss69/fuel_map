@@ -3,6 +3,8 @@ import type { Response } from 'express';
 import { z } from 'zod';
 import { getConfig } from '../config';
 import { EmailService } from '../digest/email.service';
+import { DigestModule } from '../digest/digest.module';
+import { DigestService, digestSettingsSchema, digestStatusSchema } from '../digest/digest.service';
 import { SubscriberService, SESSION_COOKIE } from './subscriber.service';
 import { AlertsService, ruleSchema, pushSchema } from './alerts.service';
 import { AlertProcessor, PushSender } from './alert-processor.service';
@@ -25,5 +27,18 @@ export class AlertsController {
  @Post('devices/:id/revoke') @HttpCode(200) async revoke(@Param('id') id:string,@Headers('cookie') cookie?:string,@Headers('origin') origin?:string){originCheck(origin);return this.alerts.revoke((await this.identity.current(cookie)).id,parse(z.string().uuid(),id));}
  @Post('logout') @HttpCode(200) async logout(@Res({passthrough:true}) res:Response,@Headers('cookie') cookie?:string,@Headers('origin') origin?:string){originCheck(origin);await this.identity.logout(cookie);res.clearCookie(SESSION_COOKIE,cookieOptions());return {ok:true};}
 }
-@Module({controllers:[AlertsController],providers:[EmailService,SubscriberService,AlertsService,AlertProcessor,PushSender,TestPushService]})
+@Controller('api/v1/alerts/digest')
+export class DigestManagementController {
+ constructor(private readonly identity:SubscriberService,private readonly digest:DigestService){}
+ @Get() async current(@Res() res:Response,@Headers('cookie') cookie?:string){res.json(await this.digest.current((await this.identity.current(cookie)).id));}
+ @Put() async save(@Body() body:unknown,@Headers('cookie') cookie?:string,@Headers('origin') origin?:string){
+  originCheck(origin);const sub=await this.identity.current(cookie);
+  return this.digest.updateSettings(sub.id,parse(digestSettingsSchema,body));
+ }
+ @Put('status') async status(@Body() body:unknown,@Headers('cookie') cookie?:string,@Headers('origin') origin?:string){
+  originCheck(origin);const sub=await this.identity.current(cookie);
+  return this.digest.updateStatus(sub.id,parse(digestStatusSchema,body).status);
+ }
+}
+@Module({imports:[DigestModule],controllers:[AlertsController,DigestManagementController],providers:[EmailService,SubscriberService,AlertsService,AlertProcessor,PushSender,TestPushService]})
 export class AlertsModule{}

@@ -1,3 +1,4 @@
+import { spamNotice, spamNoticeHtml } from '../digest/email-notice';
 import { BadRequestException, Injectable, UnauthorizedException, ServiceUnavailableException } from '@nestjs/common';
 import { randomBytes, createHash } from 'node:crypto';
 import { DatabaseService } from '../database/database.service';
@@ -28,7 +29,7 @@ export class SubscriberService {
    await client.query('COMMIT');
   }catch(e){await client.query('ROLLBACK');throw e;}finally{client.release();}
   const url=new URL('/mes-alertes',config.PUBLIC_APP_URL||config.FRONTEND_ORIGIN);url.hash=token;
-  try{await this.email.send({from:config.EMAIL_FROM||'Trajetico <bonjour@trajetico.space>',to:[email],subject:'Votre lien de connexion Trajetico',text:`Accéder à mes alertes : ${url}\nCe lien est valable 30 minutes et utilisable une seule fois. Si vous n’avez pas demandé ce lien, ignorez cet email.`,html:`<h1>Mes alertes Trajetico</h1><p><a href="${url.toString().replace(/&/g,'&amp;')}">Accéder à mes alertes</a></p><p>Ce lien expire dans 30 minutes et ne peut être utilisé qu’une fois. Ignorez cet email si vous ne l’avez pas demandé.</p>`},`login/${hashToken(token)}`);}catch{ /* Neutral response avoids account enumeration; no secrets in logs. */ }
+  try{await this.email.send({from:config.EMAIL_FROM||'Trajetico <bonjour@trajetico.space>',to:[email],subject:'Votre lien de connexion Trajetico',text:`Accéder à mes alertes : ${url}\nCe lien est valable 30 minutes et utilisable une seule fois. Si vous n’avez pas demandé ce lien, ignorez cet email.\n\n${spamNotice}`,html:`<h1>Mes alertes Trajetico</h1><p><a href="${url.toString().replace(/&/g,'&amp;')}">Accéder à mes alertes</a></p><p>Ce lien expire dans 30 minutes et ne peut être utilisé qu’une fois. Ignorez cet email si vous ne l’avez pas demandé.</p>${spamNoticeHtml}`},`login/${hashToken(token)}`);}catch{ /* Neutral response avoids account enumeration; no secrets in logs. */ }
   return neutral;
  }
  async verify(token:string){
