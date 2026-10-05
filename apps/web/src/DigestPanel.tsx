@@ -21,7 +21,7 @@ export function DigestPanel({favorite,initialFuel,point,radius,onRadiusChange,pi
     <div className="digest-header"><h2>Votre point carburant du matin</h2><button type="button" onClick={onClose} aria-label="Fermer le formulaire">×</button></div>
     <div className="digest-body">
       <p>Les 3 stations les moins chères autour de votre zone, les jours choisis à <strong>08:00, heure de Paris</strong>.</p>
-      {mutation.isSuccess ? <p role="status">{mutation.data.message} Pensez à vérifier vos courriers indésirables.</p> :
+      {mutation.isSuccess ? <p role="status">{mutation.data.message} Pensez à vérifier votre dossier « Spam » ou « Courriers indésirables ».</p> :
       <form onSubmit={e=>{e.preventDefault();if(point && weekdays.length>0)mutation.mutate();}}>
         <fieldset disabled={mutation.isPending}>
           <label>Carburant<select value={fuel} onChange={e=>setFuel(e.target.value as FuelCode)}>
@@ -51,7 +51,7 @@ export function DigestPanel({favorite,initialFuel,point,radius,onRadiusChange,pi
             </div>
             <small role="status">{weekdays.length}/3 jours sélectionnés · 08:00, heure de Paris</small>
           </div>
-          <p className="digest-note">Confirmez votre email pour activer l’abonnement. Un seul abonnement par adresse. Désabonnement possible dans chaque email.</p>
+          <p className="digest-note">Confirmez votre email pour activer l’abonnement. Si vous ne trouvez pas le message, vérifiez votre dossier « Spam » ou « Courriers indésirables ». Un seul abonnement par adresse. Désabonnement possible dans chaque email.</p>
           <button type="submit" disabled={!point || weekdays.length===0 || mutation.isPending}>{mutation.isPending?'Envoi…':'Recevoir le digest'}</button>
         </fieldset>
       </form>}

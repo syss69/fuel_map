@@ -13,7 +13,7 @@ export async function alertRequest<T>(path:string,method='GET',body?:unknown):Pr
 function useMe(){return useQuery({queryKey:['alerts-me'],queryFn:()=>alertRequest<Me>('/me'),retry:false,staleTime:0});}
 export function LoginForm(){
  const [email,setEmail]=useState('');const mutation=useMutation({mutationFn:()=>alertRequest<{message:string}>('/login','POST',{email})});
- return <><form onSubmit={e=>{e.preventDefault();mutation.mutate();}}><p>Connectez-vous par email pour gérer vos alertes, sans mot de passe.</p><label>Email<input type="email" required autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} /></label><button disabled={mutation.isPending}>Recevoir un lien</button>{mutation.isSuccess&&<p role="status">{mutation.data.message}</p>}{mutation.isError&&<p role="alert">{mutation.error.message}</p>}</form><PasteLoginLink/></>;
+ return <><form onSubmit={e=>{e.preventDefault();mutation.mutate();}}><p>Connectez-vous par email pour gérer vos alertes, sans mot de passe.</p><label>Email<input type="email" required autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} /></label><button disabled={mutation.isPending}>Recevoir un lien</button>{mutation.isSuccess&&<p role="status">{mutation.data.message} Pensez à vérifier votre dossier « Spam » ou « Courriers indésirables ».</p>}{mutation.isError&&<p role="alert">{mutation.error.message}</p>}</form><PasteLoginLink/></>;
 }
 function PasteLoginLink(){
  const [link,setLink]=useState('');const [error,setError]=useState('');
