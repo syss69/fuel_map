@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { createHash, createHmac, randomBytes, randomUUID } from 'node:crypto';
 import type { PoolClient } from 'pg';
 import { z } from 'zod';
@@ -18,6 +18,8 @@ export const subscriptionSchema = z.object({
     .transform(days=>[...days].sort((a,b)=>a-b)),
 }).strict();
 export const tokenSchema = z.object({token:z.string().min(40).max(160).regex(/^[A-Za-z0-9_.-]+$/)}).strict();
+export const digestSettingsSchema = subscriptionSchema.omit({email:true}).extend({favoriteStationId:z.string().uuid().nullable()});
+export const digestStatusSchema = z.object({status:z.enum(['ACTIVE','UNSUBSCRIBED'])}).strict();
 export const tokenHash = (token: string) => createHash('sha256').update(token).digest('hex');
 const neutral = {message:'Si cette demande peut être traitée, vous recevrez un email pour confirmer votre abonnement.'};
 interface Subscription { id:string; email:string; status:string; unsubscribe_nonce:string; last_confirmation_at:Date|null; fuel_type_id:number; timezone:string; favorite_station_id:string|null }
@@ -27,6 +29,53 @@ interface Delivery { id:string; status:string; created_at:Date; attempts:number;
 export class DigestService {
   private readonly logger = new Logger(DigestService.name);
   constructor(private readonly db: DatabaseService, private readonly email: EmailService) {}
+  async current(subscriberId:string, client:Pick<PoolClient,'query'>=this.db.pool) {
+    const {rows}=await client.query(`SELECT d.status, f.code AS "fuelCode",
+      ST_Y(d.center::geometry) AS lat, ST_X(d.center::geometry) AS lng,
+      d.radius_meters AS "radiusMeters", d.weekdays, d.favorite_station_id AS "favoriteStationId",
+      CASE WHEN s.id IS NULL THEN NULL ELSE json_build_object('id',s.id,'displayName',coalesce(s.display_name,'Station-service'),
+        'address',s.address,'city',s.city,'lat',ST_Y(s.location::geometry),'lng',ST_X(s.location::geometry)) END AS "favoriteStation"
+      FROM digest_subscriptions d JOIN fuel_types f ON f.id=d.fuel_type_id
+      LEFT JOIN stations s ON s.id=d.favorite_station_id WHERE d.subscriber_id=$1`,[subscriberId]);
+    return rows[0] ?? null;
+  }
+  private async manage(subscriberId:string, change:(client:PoolClient,id:string)=>Promise<void>) {
+    const client=await this.db.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const sub=(await client.query<{id:string}>('SELECT id FROM digest_subscriptions WHERE subscriber_id=$1',[subscriberId])).rows[0];
+      if(!sub)throw new NotFoundException('Aucun abonnement au digest.');
+      // Same lock and ordering as delivery, unsubscribe and public resubscription.
+      await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 2))',[sub.id]);
+      if(!(await client.query('SELECT id FROM digest_subscriptions WHERE id=$1 AND subscriber_id=$2 FOR UPDATE',[sub.id,subscriberId])).rowCount)
+        throw new NotFoundException('Aucun abonnement au digest.');
+      await change(client,sub.id);
+      const result=await this.current(subscriberId,client);
+      await client.query('COMMIT');
+      return result;
+    } catch(error) {await client.query('ROLLBACK');throw error;} finally {client.release();}
+  }
+  async updateSettings(subscriberId:string, body:z.infer<typeof digestSettingsSchema>) {
+    return this.manage(subscriberId,async(client,id)=>{
+      const fuel=(await client.query<{id:number}>('SELECT id FROM fuel_types WHERE code=$1',[body.fuelCode])).rows[0];
+      if(!fuel)throw new BadRequestException('Carburant inconnu.');
+      if(body.favoriteStationId && !(await client.query('SELECT id FROM stations WHERE id=$1',[body.favoriteStationId])).rowCount)
+        throw new BadRequestException('Station favorite inconnue.');
+      await client.query(`UPDATE digest_subscriptions SET fuel_type_id=$2,
+        center=ST_SetSRID(ST_MakePoint($3,$4),4326)::geography,radius_meters=$5,
+        favorite_station_id=$6,weekdays=$7,updated_at=now() WHERE id=$1`,
+        [id,fuel.id,body.lng,body.lat,body.radiusMeters,body.favoriteStationId,body.weekdays]);
+    });
+  }
+  async updateStatus(subscriberId:string, status:'ACTIVE'|'UNSUBSCRIBED') {
+    return this.manage(subscriberId,async(client,id)=>{
+      await client.query(`UPDATE digest_subscriptions SET status=$2::digest_subscription_status,
+        verified_at=CASE WHEN $2='ACTIVE' THEN coalesce(verified_at,now()) ELSE verified_at END,
+        verification_token_hash=NULL,verification_expires_at=NULL,updated_at=now() WHERE id=$1`,[id,status]);
+      if(status==='UNSUBSCRIBED')await client.query(`UPDATE email_deliveries SET status='CANCELLED'
+        WHERE subscription_id=$1 AND type='MORNING_DIGEST' AND status IN ('PENDING','RETRY')`,[id]);
+    });
+  }
   private settings() {
     const c=getConfig();
     if(c.DIGEST_ENABLED!=='true' || !c.RESEND_API_KEY || !c.DIGEST_TOKEN_SECRET) throw new ServiceUnavailableException('Les abonnements email sont temporairement indisponibles.');
@@ -57,6 +106,8 @@ export class DigestService {
       if(body.favoriteStationId && !(await client.query('SELECT id FROM stations WHERE id=$1',[body.favoriteStationId])).rowCount) throw new BadRequestException('Station favorite inconnue');
       if(!await this.limit(client,`ip:${tokenHash(ip)}`,3600,10)) {await client.query('COMMIT');return neutral;}
       await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 1))',[body.email]);
+      const existing=(await client.query<{id:string}>('SELECT id FROM digest_subscriptions WHERE email=$1',[body.email])).rows[0];
+      if(existing)await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 2))',[existing.id]);
       const old=(await client.query<Subscription>('SELECT * FROM digest_subscriptions WHERE email=$1 FOR UPDATE',[body.email])).rows[0];
       if(old?.status==='ACTIVE' || (old?.last_confirmation_at && Date.now()-old.last_confirmation_at.getTime()<300000)) {await client.query('COMMIT');return neutral;}
       if(!await this.limit(client,`email:${tokenHash(body.email)}`,86400,3)) {await client.query('COMMIT');return neutral;}
@@ -88,11 +139,18 @@ export class DigestService {
     return neutral;
   }
   async verify(token:string) {
-    const result=await this.db.pool.query(`UPDATE digest_subscriptions SET status='ACTIVE',verified_at=now(),updated_at=now(),
-      verification_token_hash=NULL,verification_expires_at=NULL
-      WHERE verification_token_hash=$1 AND status='PENDING' AND verification_expires_at>now() RETURNING id`,[tokenHash(token)]);
-    if(!result.rowCount) throw new BadRequestException('Ce lien est invalide ou a expiré. Demandez un nouvel email de confirmation.');
-    return {message:'Votre abonnement est confirmé.'};
+    const client=await this.db.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const sub=(await client.query<{id:string}>('SELECT id FROM digest_subscriptions WHERE verification_token_hash=$1',[tokenHash(token)])).rows[0];
+      if(sub)await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 2))',[sub.id]);
+      const result=await client.query(`UPDATE digest_subscriptions SET status='ACTIVE',verified_at=now(),updated_at=now(),
+        verification_token_hash=NULL,verification_expires_at=NULL
+        WHERE verification_token_hash=$1 AND status='PENDING' AND verification_expires_at>now() RETURNING id`,[tokenHash(token)]);
+      if(!result.rowCount)throw new BadRequestException('Ce lien est invalide ou a expiré. Demandez un nouvel email de confirmation.');
+      await client.query('COMMIT');
+      return {message:'Votre abonnement est confirmé.'};
+    } catch(error){await client.query('ROLLBACK');throw error;} finally{client.release();}
   }
   async unsubscribe(token:string) {
     const client=await this.db.pool.connect();
