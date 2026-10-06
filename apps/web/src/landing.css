@@ -99,3 +99,9 @@
  .landing-header nav a:first-child { padding: 7px 15px; }.landing-section { padding-top: 34px; padding-bottom: 30px; }
 }
 @media(prefers-reduced-motion: reduce) { .landing .landing-primary, .landing-features article { transition: none; }.landing .landing-primary:hover, .landing-features article:hover { transform: none; } }
+.landing-local p { max-width:780px; line-height:1.7; }
+.landing-local .landing-primary { margin-top:12px; }
+.landing-faq details { border-bottom:1px solid #c9d6cd; padding:18px 0; }
+.landing-faq summary { cursor:pointer; font-weight:650; line-height:1.5; }
+.landing-faq p { max-width:780px; line-height:1.7; }
+.landing-faq summary:focus-visible { outline:2px solid #176b51; outline-offset:5px; }

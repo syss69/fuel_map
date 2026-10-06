@@ -213,3 +213,11 @@ Management, delivery, email verification/unsubscribe and public resubscription u
 Checks: build first, then `node apps/api/digest.integration.cjs`, `node apps/api/digest-management.integration.cjs`, and `node apps/api/alerts.integration.cjs`. Tests use PostgreSQL with rollback and fake providers. The management test exercises actual Nest HTTP routes and contention with a separate PostgreSQL connection. `node apps/api/alerts.preview.cjs` provides a local authenticated UI preview with rollback (Enter to stop), never production authentication or external sends.
 
 Deploy by rebuilding API and web. No new migration or database preparation is needed for this milestone.
+
+### Landing search visibility
+
+The web build prerenders the shared React landing into dist/index.html, with title, description, canonical URL and WebSite JSON-LD. The public origin is https://trajetico.com in apps/web/src/seo.ts. Landing content is readable without JavaScript. No live prices, review ratings or nationwide coverage are claimed.
+
+Caddy serves the homepage at /; other client routes fall back to app-shell.html, without landing content/schema. Private alert pages and digest action URLs receive noindex headers. Public routes set their own canonical and metadata at startup. The build generates robots.txt and a sitemap containing the landing. Run npm run test:seo --workspace=@fuel-map/web after building.
+
+Deploy by rebuilding web, including its Caddyfile. No API/DB changes. In Google Search Console verify domain ownership, submit https://trajetico.com/sitemap.xml, and inspect/request indexing of the homepage. Search engines determine indexing and rankings; neither is guaranteed by these changes.

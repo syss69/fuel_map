@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test:seo": "node scripts/check-seo.mjs",
     "dev": "vite",
-    "build": "tsc -b && vite build --configLoader runner",
+    "build": "tsc -b && vite build --configLoader runner && node scripts/prerender.mjs",
     "typecheck": "tsc -b --pretty false",
     "lint": "tsc -b --pretty false"
   },
