@@ -40,7 +40,7 @@ services:
       api:
         condition: service_started
     environment:
-      SITE_ADDRESS: :80
+      SITE_ADDRESS: :trajetico.com
     ports:
       - "80:80"
       - "443:443"

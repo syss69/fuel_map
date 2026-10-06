@@ -50,6 +50,13 @@
       "when": 1790899200000,
       "tag": "0006_alert_price_threshold",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791244800000,
+      "tag": "0007_unknown_fuel_available",
+      "breakpoints": true
     }
   ]
 }
