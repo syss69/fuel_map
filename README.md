@@ -154,7 +154,7 @@ API prefix `/api/v1/alerts`:
 - `POST /devices` `{ endpoint, keys: { p256dh, auth }, deviceLabel? }`: upsert an owned browser subscription, refresh last_seen_at. An endpoint cannot be reassigned to another subscriber. Browser-provider hosts are allowlisted to prevent server-side requests to arbitrary URLs.
 - `POST /devices/:id/revoke`: revoke an owned device and cancel its pending deliveries, leaving rules and other devices intact.
 
-The official-state UPDATE trigger emits price increase/decrease only when both prices are non-null and differ. It emits BECAME_AVAILABLE only from an explicit unavailable status, never UNKNOWN; initial station fuel inserts emit nothing. Updates, history and event creation share the importer's PostgreSQL transaction. No external delivery occurs in that transaction. Creating/re-enabling a rule takes the same station lock used by the importer and captures the latest fuel event id, so pre-existing queued changes cannot trigger a new rule.
+The official-state UPDATE trigger emits price increase/decrease only when both prices are non-null and differ. It emits BECAME_AVAILABLE from UNKNOWN or an explicit unavailable status to AVAILABLE; initial station fuel inserts emit nothing. Apply migration `0007_unknown_fuel_available.sql` to enable UNKNOWN transitions on existing deployments. Only future transitions generate events; missed notifications are not backfilled. Updates, history and event creation share the importer's PostgreSQL transaction. No external delivery occurs in that transaction. Creating/re-enabling a rule takes the same station lock used by the importer and captures the latest fuel event id, so pre-existing queued changes cannot trigger a new rule.
 
 Every five seconds, AlertProcessor serially handles up to 250 committed events in event-id order under a database lock. Rule changes, notification creation, device delivery fan-out and marking events processed commit together. Unique `(alert_rule_id,fuel_event_id)` prevents duplicate notifications; unique `(notification_event_id,push_subscription_id)` prevents duplicate delivery rows. ONCE completes on its first event. Recurring availability fires for each explicit return. Recurring price starts armed, fires/disarms on a drop, ignores further drops/equal/null transitions and re-arms on a price increase. Changing frequency on an active rule preserves its state.
 
@@ -213,3 +213,11 @@ Management, delivery, email verification/unsubscribe and public resubscription u
 Checks: build first, then `node apps/api/digest.integration.cjs`, `node apps/api/digest-management.integration.cjs`, and `node apps/api/alerts.integration.cjs`. Tests use PostgreSQL with rollback and fake providers. The management test exercises actual Nest HTTP routes and contention with a separate PostgreSQL connection. `node apps/api/alerts.preview.cjs` provides a local authenticated UI preview with rollback (Enter to stop), never production authentication or external sends.
 
 Deploy by rebuilding API and web. No new migration or database preparation is needed for this milestone.
+
+### Landing search visibility
+
+The web build prerenders the shared React landing into dist/index.html, with title, description, canonical URL and WebSite JSON-LD. The public origin is https://trajetico.com in apps/web/src/seo.ts. Landing content is readable without JavaScript. No live prices, review ratings or nationwide coverage are claimed.
+
+Caddy serves the homepage at /; other client routes fall back to app-shell.html, without landing content/schema. Private alert pages and digest action URLs receive noindex headers. Public routes set their own canonical and metadata at startup. The build generates robots.txt and a sitemap containing the landing. Run npm run test:seo --workspace=@fuel-map/web after building.
+
+Deploy by rebuilding web, including its Caddyfile. No API/DB changes. In Google Search Console verify domain ownership, submit https://trajetico.com/sitemap.xml, and inspect/request indexing of the homepage. Search engines determine indexing and rankings; neither is guaranteed by these changes.

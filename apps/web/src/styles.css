@@ -135,6 +135,8 @@ button { font: inherit; }
 .station-card h2 { margin: 0; padding-right: 30px; font-size: 24px; line-height: 1.15; }
 .brand { margin: 5px 0 0; color: #176b51; font-weight: 700; }
 .address { margin: 10px 0 0; color: #64766f; font-size: 14px; line-height: 1.45; }
+.station-sync { margin:10px 0 0; color:#64766f; font-size:13px; line-height:1.5; }
+.station-sync small { display:block; font-size:12px; }
 .fuel-list { margin-top: 20px; border-top: 1px solid #e3e8e2; }
 .fuel-row { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid #e3e8e2; }
 .fuel-row span { color: #52665f; }

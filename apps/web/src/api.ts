@@ -19,6 +19,7 @@ export interface StationMarker {
 }
 
 export interface StationDetail {
+  lastSyncedAt: string;
   community: CommunityState;
   queue: QueueAggregate;
   id: string;

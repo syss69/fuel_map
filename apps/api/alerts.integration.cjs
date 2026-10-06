@@ -41,13 +41,27 @@ const {AlertsController}=require('./dist/alerts/alerts.module');
   await alerts.save(sub.id,{...rule,eventType:'FUEL_AVAILABLE',frequency:'ONCE'});
   await processor.processEvents();assert.equal(await count('notification_events'),0);
   const update=async(price,availability='AVAILABLE')=>{await c.query('UPDATE station_fuels SET price_milli_eur=$2,availability=$3 WHERE station_id=$1',[station,price,availability]);await processor.processEvents();};
-  await update(2300);assert.equal(await count('notification_events'),0); // UNKNOWN -> AVAILABLE excluded
-  await update(2000);assert.equal(await count('notification_events'),0);
-  await update(1900);assert.equal(await count('notification_events'),1);
-  await update(1800);assert.equal(await count('notification_events'),1);
-  await update(1950);await update(1900);assert.equal(await count('notification_events'),1);
-  await update(2100);await update(1900);assert.equal(await count('notification_events'),2);
-  await update(null);await update(1700);assert.equal(await count('notification_events'),2);
+  await update(2300);assert.equal(await count('notification_events'),1); // UNKNOWN -> AVAILABLE notifies an existing rule.
+  assert.equal((await alerts.list(sub.id)).find(r=>r.eventType==='FUEL_AVAILABLE').status,'COMPLETED');
+  await c.query('SAVEPOINT unknown_recurring');
+  await alerts.save(sub.id,{...rule,eventType:'FUEL_AVAILABLE',frequency:'RECURRING'});
+  await processor.processEvents();assert.equal(await count('notification_events'),1); // Already available: no immediate alert.
+  await update(2300);assert.equal(await count('notification_events'),1); // No duplicate on unchanged imports.
+  await update(2300,'UNKNOWN');assert.equal(await count('notification_events'),1);
+  await update(2300);assert.equal(await count('notification_events'),2);
+  await processor.processEvents();assert.equal(await count('notification_events'),2);
+  await update(2300,'UNKNOWN');
+  await alerts.save(sub.id,{...rule,eventType:'FUEL_AVAILABLE',status:'DISABLED'});
+  await c.query("UPDATE station_fuels SET availability='AVAILABLE' WHERE station_id=$1",[station]);
+  await alerts.save(sub.id,{...rule,eventType:'FUEL_AVAILABLE',frequency:'RECURRING'});
+  await processor.processEvents();assert.equal(await count('notification_events'),2); // Queued before activation: skipped.
+  await c.query('ROLLBACK TO SAVEPOINT unknown_recurring');
+  await update(2000);assert.equal(await count('notification_events'),1);
+  await update(1900);assert.equal(await count('notification_events'),2);
+  await update(1800);assert.equal(await count('notification_events'),2);
+  await update(1950);await update(1900);assert.equal(await count('notification_events'),2);
+  await update(2100);await update(1900);assert.equal(await count('notification_events'),3);
+  await update(null);await update(1700);assert.equal(await count('notification_events'),3);
   await update(1700,'TEMPORARILY_UNAVAILABLE');await update(1700);assert.equal(await count('notification_events'),3);
   assert.equal((await alerts.list(sub.id)).find(r=>r.eventType==='FUEL_AVAILABLE').status,'COMPLETED');
   await update(1700,'UNAVAILABLE');await update(1700);assert.equal(await count('notification_events'),3);
@@ -90,6 +104,6 @@ const {AlertsController}=require('./dist/alerts/alerts.module');
    assert.equal((await fetch(url+'/api/v1/alerts/me')).status,401);
    assert.equal((await fetch(url+'/api/v1/alerts/disable-all',{method:'POST',headers:{Cookie:setCookie.split(';')[0],Origin:'https://evil.test'}})).status,403);
   }finally{await app.close();}
-  console.log('Push PostgreSQL checks passed: identity/session, ownership, CSRF, baselines, ONCE, price re-arm, recurring availability, null/unknown exclusion, atomic rollback, idempotency, multiple devices, retry/410, disable, digest isolation. No external messages sent.');
+  console.log('Push PostgreSQL checks passed: identity/session, ownership, CSRF, baselines, ONCE, price re-arm, recurring availability, null price exclusion, UNKNOWN availability transitions, atomic rollback, idempotency, multiple devices, retry/410, disable, digest isolation. No external messages sent.');
  }finally{await c.query('ROLLBACK');c.release();await pool.end();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,4 +1,5 @@
 import { StationAlerts } from './Alerts';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchStation, Availability } from './api';
 import type { FuelCode } from './api';
@@ -47,6 +48,7 @@ export function StationCard({ stationId, selectedFuel, onClose }: Props) {
             <p className="address">
               {[detail.data.address, detail.data.city].filter(Boolean).join(', ') || 'Adresse non renseignée'}
             </p>
+            <StationSyncTime value={detail.data.lastSyncedAt} />
           </header>
           <div className="fuel-list">
             {detail.data.fuels.map((fuel) => {
@@ -74,4 +76,17 @@ export function StationCard({ stationId, selectedFuel, onClose }: Props) {
       </div>
     </aside>
   );
+}
+
+function StationSyncTime({value}:{value:string}) {
+  const [now,setNow]=useState(Date.now);
+  useEffect(()=>{const timer=window.setInterval(()=>setNow(Date.now()),60_000);return()=>window.clearInterval(timer);},[]);
+  const date=new Date(value);
+  if(!Number.isFinite(date.getTime()))return null;
+  const minutes=Math.max(0,Math.floor((now-date.getTime())/60_000));
+  const age=minutes===0?'à l’instant':minutes<60?`il y a ${minutes} min`:`il y a ${Math.floor(minutes/60)} h`;
+  return <p className="station-sync">Dernière synchronisation : <time dateTime={value}>{age}</time>
+    <small>{new Intl.DateTimeFormat('fr-FR',{dateStyle:'medium',timeStyle:'short',timeZone:'Europe/Paris'}).format(date)} (heure de Paris)</small>
+    <small>Dernières données reçues pour cette station.</small>
+  </p>;
 }
