@@ -61,8 +61,8 @@ export class StationsService {
   }
 
   async detail(id: string, reporterId?: string) {
-    const stationResult = await this.db.pool.query<StationRow>(
-      `SELECT id, official_id, display_name, brand, address, city,
+    const stationResult = await this.db.pool.query<StationRow & { last_seen_at: Date }>(
+      `SELECT id, official_id, display_name, brand, address, city, last_seen_at,
               ST_Y(location::geometry) AS lat, ST_X(location::geometry) AS lng
        FROM stations
        WHERE id = $1 AND department_code = $2 AND last_seen_at >= now() - interval '24 hours'`,
@@ -81,6 +81,7 @@ export class StationsService {
     return {
       id: station.id,
       officialId: station.official_id,
+      lastSyncedAt: station.last_seen_at.toISOString(),
       queue: await this.queues.aggregate(id, reporterId),
       community: await this.community.aggregate(id, reporterId),
       displayName: station.display_name ?? 'Station-service',
