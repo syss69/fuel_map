@@ -1,0 +1,35 @@
+name: Check
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Repo checkout
+      uses: actions/checkout@v4  
+
+    - name: Node 22 set up
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+
+    - name: Install dependenies
+      run: npm ci
+
+    - name: lint
+      run: npm run lint
+
+    - name: typecheck
+      run: npm run typecheck
+
+    - name: build
+      run: npm run build 
+    
+    - name: Check SEO
+      run: npm run test:seo
