@@ -34,49 +34,49 @@ jobs:
     - name: Check SEO
       run: npm run test:seo
 
-    integration:
-      needs: [check]
-      runs-on: ubuntu-latest
+  integration:
+    needs: [check]
+    runs-on: ubuntu-latest
 
-      services:
-        postgres:
-          image: postgis/postgis:18-3.6
-          env:
-            POSTGRES_DB: test
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: postgres
-          options: >-
-            --health-cmd "pg_isready -U postgres -d test"
-            --health-interval 5s
-            --health-timeout 5s
-            --health-retries 20
-          ports:
-            - 5432:5432
+    services:
+      postgres:
+        image: postgis/postgis:18-3.6
+        env:
+          POSTGRES_DB: test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd "pg_isready -U postgres -d test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+        ports:
+          - 5432:5432
 
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
 
 
-      steps:
-        - name: checkout
-          uses: checkout@v4
-        - name: Node 22 set up
-          uses: actions/setup-node@v4
-          with:
-            node-version: 22
-            cache: npm
-        - name: Install dependencies
-          run: npm ci
-        - name: Build application
-          run: npm run build
+    steps:
+      - name: checkout
+        uses: checkout@v4
+      - name: Node 22 set up
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci 
+      - name: Build application
+        run: npm run build
 
-        - name: Apply database migrations
-          run: npm run db:migrate
+      - name: Apply database migrations
+        run: npm run db:migrate
 
-        - name: Run integration tests
-          run: |
-            node apps/api/queue.integration.cjs
-            node apps/api/community.integration.cjs
-            node apps/api/digest.integration.cjs
-            node apps/api/digest-management.integration.cjs
-            node apps/api/alerts.integration.cjs
+      - name: Run integration tests
+        run: |
+          node apps/api/queue.integration.cjs
+          node apps/api/community.integration.cjs
+          node apps/api/digest.integration.cjs
+          node apps/api/digest-management.integration.cjs
+          node apps/api/alerts.integration.cjs
