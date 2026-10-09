@@ -73,6 +73,9 @@ jobs:
       - name: Apply database migrations
         run: npm run db:migrate
 
+      - name: Seed fuel
+        run: npm run db:seed
+
       - name: Run integration tests
         run: |
           node apps/api/queue.integration.cjs
