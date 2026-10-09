@@ -59,7 +59,7 @@ jobs:
 
     steps:
       - name: checkout
-        uses: checkout@v4
+        uses: actions/checkout@v4
       - name: Node 22 set up
         uses: actions/setup-node@v4
         with:
