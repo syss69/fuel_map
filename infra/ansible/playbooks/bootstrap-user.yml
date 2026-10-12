@@ -1,0 +1,47 @@
+---
+- name: Bootstrap Ansible management user
+  hosts: monitoring
+  gather_facts: false
+  become: false
+
+  vars:
+    bootstrap_user: trajetico
+    bootstrap_public_key_path: "{{ lookup('env', 'HOME') }}/.ssh/ansible_control_ed25519.pub"
+
+  tasks:
+    - name: Create Ansible management user
+      ansible.builtin.user:
+        name: "{{ bootstrap_user }}"
+        groups: sudo
+        append: true
+        shell: /bin/bash
+        create_home: true
+        password_lock: true
+        state: present
+
+    - name: Create ssh directory
+      ansible.builtin.file:
+        path: "/home/{{bootstrap_user}}/.ssh"
+        state: directory
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0700"
+
+    - name: Authorize Ansible public key
+      ansible.builtin.blockinfile:
+        path: "/home/{{bootstrap_user}}/.ssh/authorized_keys"
+        create: true
+        owner: "{{bootstrap_user}}"
+        group: "{{bootstrap_user}}"
+        mode: "0600"
+        marker: "# {mark} ANSIBLE CONTROL KEY"
+        block: "{{lookup('ansible.builtin.file', bootstrap_public_key_path) }}"
+
+    - name: Allow passwordless sudo for the management user
+      ansible.builtin.copy:
+        dest: "/etc/sudoers.d/{{ bootstrap_user }}"
+        content: "{{ bootstrap_user }} ALL=(ALL) NOPASSWD: ALL\n"
+        owner: root
+        group: root
+        mode: "0440"
+        validate: "/usr/sbin/visudo -cf %s"

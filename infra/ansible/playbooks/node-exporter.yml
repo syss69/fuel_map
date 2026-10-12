@@ -1,0 +1,6 @@
+---
+- name: Install node exporter on prod servers
+  hosts: production
+  become: true
+  roles:
+    - node_exporter

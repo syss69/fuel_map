@@ -1,0 +1,24 @@
+---
+- name: Allow prometheus scrape node exporter
+  community.general.ufw:
+    rule: allow
+    port: "9100"
+    proto: tcp
+    from_ip: "{{ hostvars['monitor1']['ansible_host'] }}"
+
+- name: Run node exporter
+  community.docker.docker_container:
+    name: node-exporter
+    image: prom/node-exporter:v1.12.1
+    state: started
+    restart_policy: unless-stopped
+    network_mode: host
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/rootfs
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro,rslave
+
