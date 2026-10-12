@@ -12,6 +12,7 @@
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
+    "test:seo": "npm run test:seo --workspace=@fuel-map/web",
     "db:migrate": "npm run migrate --workspace=@fuel-map/database",
     "db:seed": "npm run seed --workspace=@fuel-map/database",
     "db:generate": "npm run generate --workspace=@fuel-map/database",

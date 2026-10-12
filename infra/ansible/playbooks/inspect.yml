@@ -1,0 +1,14 @@
+---
+- name: Inspect production servers
+  hosts: production
+  gather_facts: true
+
+  tasks:
+    - name: Show basic server info
+      ansible.builtin.debug:
+        msg:
+          - "Host : {{ansible_facts['hostname']}}"
+          - "OS : {{ansible_facts['distribution'] }} {{ansible_facts['distribution_version']}}"
+          - "Kernel : {{ansible_facts['kernel'] }}"
+          - "CPU cores : {{ansible_facts['processor_vcpus'] }}"
+          - "Memory : {{ansible_facts['memtotal_mb'] }} MB "
