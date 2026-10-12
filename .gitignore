@@ -4,3 +4,4 @@ dist-cli/
 .env
 *.tsbuildinfo
 .vite/
+/infra/ansible/inventory/hosts.yml
