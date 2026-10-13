@@ -1,0 +1,26 @@
+---
+- name: Install Docker
+  hosts: monitoring
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Install Docker from Ubuntu
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - docker-compose-v2
+        state: present
+        update_cache: true
+
+    - name: Start Docker and enable it on boot
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Allow management user to run Docker
+      ansible.builtin.user:
+        name: trajetico
+        groups: docker
+        append: true

@@ -1,0 +1,43 @@
+---
+- name: Prepare monitoring server
+  hosts: monitoring
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Refresh package index
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+          - ufw
+        state: present
+
+    - name: Allow ssh
+      community.general.ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: Enable firewall
+      community.general.ufw:
+        state: enabled
+        policy: deny
+
+    - name: Prepare monitoring directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - /opt/monitoring
+        - /opt/monitoring/prometheus
+        - /opt/monitoring/grafana
+        - /opt/monitoring/alertmanager
