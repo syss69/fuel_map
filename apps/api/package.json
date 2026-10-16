@@ -12,7 +12,8 @@
     "lint": "tsc -p tsconfig.json --noEmit",
     "preimport:fuels": "npm run build --workspace=@fuel-map/database && tsc -p tsconfig.json --outDir dist-cli",
     "import:fuels": "node dist-cli/cli/import-fuels.js",
-    "apply-overrides": "tsx src/cli/apply-overrides.ts"
+    "apply-overrides": "tsx src/cli/apply-overrides.ts",
+    "admin:password": "tsx src/cli/admin-password.ts"
   },
   "dependencies": {
     "@fuel-map/database": "0.1.0",

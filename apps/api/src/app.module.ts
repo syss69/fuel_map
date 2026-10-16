@@ -1,3 +1,4 @@
+import { AdminModule } from './admin/admin.module';
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DatabaseModule } from './database/database.module';
@@ -8,6 +9,6 @@ import { DigestModule } from './digest/digest.module';
 import { AlertsModule } from './alerts/alerts.module';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), DatabaseModule, HealthModule, StationsModule, ImportsModule, DigestModule, AlertsModule],
+  imports: [ScheduleModule.forRoot(), DatabaseModule, AdminModule, HealthModule, StationsModule, ImportsModule, DigestModule, AlertsModule],
 })
 export class AppModule {}

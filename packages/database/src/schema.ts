@@ -26,6 +26,15 @@ const geographyPoint = customType<{ data: string }>({
   },
 });
 
+export const nameSuggestionStatus = pgEnum('name_suggestion_status', ['PENDING', 'APPROVED', 'REJECTED']);
+export const adminSessions = pgTable('admin_sessions', {
+  tokenHash: text('token_hash').primaryKey(), username: text('username').notNull(), credentialVersion: text('credential_version').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+});
+export const adminRateLimits = pgTable('admin_rate_limits', {
+  key: text('key').primaryKey(), attempts: integer('attempts').notNull(), expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+});
+
 export const availabilityEnum = pgEnum('fuel_availability', [
   'AVAILABLE',
   'TEMPORARILY_UNAVAILABLE',
@@ -42,6 +51,7 @@ export const stations = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     officialId: text('official_id').notNull(),
     displayName: text('display_name'),
+    nameManagedByAdmin: boolean('name_managed_by_admin').notNull().default(false),
     brand: text('brand'),
     address: text('address'),
     city: text('city'),
@@ -54,6 +64,23 @@ export const stations = pgTable(
   },
   (table) => [uniqueIndex('stations_official_id_uidx').on(table.officialId)],
 );
+
+export const stationNameSuggestions = pgTable('station_name_suggestions', {
+  id: uuid('id').defaultRandom().primaryKey(), stationId: uuid('station_id').notNull().references(() => stations.id),
+  reporterId: uuid('reporter_id').notNull(), proposedName: text('proposed_name').notNull(), comment: text('comment'), originalName: text('original_name'),
+  status: nameSuggestionStatus('status').notNull().default('PENDING'), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  reviewedAt: timestamp('reviewed_at', { withTimezone: true }), reviewedBy: text('reviewed_by'), decisionReason: text('decision_reason'), approvedName: text('approved_name'),
+}, t => [
+  uniqueIndex('station_name_suggestions_pending_unique').on(t.stationId, t.reporterId).where(sql`${t.status} = 'PENDING'`),
+  index('station_name_suggestions_status_created_idx').on(t.status, t.createdAt), index('station_name_suggestions_station_idx').on(t.stationId, t.createdAt),
+  check('station_name_suggestions_proposed_name_check', sql`char_length(${t.proposedName}) BETWEEN 2 AND 120`),
+  check('station_name_suggestions_comment_check', sql`char_length(${t.comment}) <= 1000`),
+]);
+export const stationNameHistory = pgTable('station_name_history', {
+  id: uuid('id').defaultRandom().primaryKey(), stationId: uuid('station_id').notNull().references(() => stations.id),
+  oldName: text('old_name'), newName: text('new_name').notNull(), adminUsername: text('admin_username').notNull(),
+  suggestionId: uuid('suggestion_id').references(() => stationNameSuggestions.id), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [index('station_name_history_station_created_idx').on(t.stationId, t.createdAt)]);
 
 export const queueReports = pgTable('queue_reports', {
   id: uuid('id').defaultRandom().primaryKey(),

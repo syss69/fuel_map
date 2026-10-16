@@ -1,3 +1,4 @@
+import { passwordHashPattern } from './admin/password';
 import { z } from 'zod';
 import { config as loadEnv } from 'dotenv';
 import path from 'node:path';
@@ -6,6 +7,8 @@ loadEnv({ path: path.resolve(process.cwd(), '../../.env') });
 loadEnv();
 
 const schema = z.object({
+  ADMIN_USERNAME: z.preprocess(v => v === '' ? undefined : v, z.string().min(1).max(120).optional()),
+  ADMIN_PASSWORD_HASH: z.preprocess(v => v === '' ? undefined : v, z.string().regex(passwordHashPattern).optional()),
   DATABASE_URL: z.string().url(),
   API_PORT: z.coerce.number().int().positive().default(3000),
   FRONTEND_ORIGIN: z.string().url().default('http://localhost:5173'),

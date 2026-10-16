@@ -3,7 +3,7 @@
     encode zstd gzip
 
     @privatePages {
-        path /mes-alertes /mes-alertes/* /app-shell.html
+        path /mes-alertes /mes-alertes/* /admin /admin/* /app-shell.html
     }
     header @privatePages X-Robots-Tag "noindex, follow"
     @digestLinks query digest=*
