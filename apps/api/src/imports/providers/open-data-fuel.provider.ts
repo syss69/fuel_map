@@ -13,7 +13,7 @@ export class OpenDataFuelProvider implements FuelDataProvider {
       '/api/explore/v2.1/catalog/datasets/prix-des-carburants-en-france-flux-instantane-v2/exports/json',
       config.FUEL_API_BASE_URL,
     );
-    url.searchParams.set('where', `code_departement="${config.FUEL_DATASET_DEPARTMENT}"`);
+    url.searchParams.set('where', config.FUEL_DATASET_DEPARTMENTS.map(code => `code_departement="${code}"`).join(' OR '));
 
     let lastError: Error | undefined;
     for (let attempt = 0; attempt < 3; attempt += 1) {

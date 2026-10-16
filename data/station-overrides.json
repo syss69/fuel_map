@@ -318,5 +318,122 @@
   },
   "64990002": {
     "displayName": "Intermarché"
+  },
+  "65000001": {
+    "displayName": "Carrefour Market"
+  },
+  "65000004": {
+    "displayName": "Esso"
+  },
+  "65000007": {
+    "displayName": "E.Leclerc"
+  },
+  "65000008": {
+    "displayName": "Intermarché"
+  },
+  "65000010": {
+    "displayName": "Total Access"
+  },
+  "65000011": {
+    "displayName": "Carrefour Market"
+  },
+  "65100001": {
+    "displayName": "Carrefour"
+  },
+  "65100004": {
+    "displayName": "Esso Express"
+  },
+  "65100005": {
+    "displayName": "E. Leclerc"
+  },
+  "65100008": {
+    "displayName": "Netto"
+  },
+  "65100009": {
+    "displayName": "Total"
+  },
+  "65120001": {
+    "displayName": "Carrefour Market"
+  },
+  "65120002": {
+    "displayName": "Indépendante"
+  },
+  "65130001": {
+    "displayName": "Intermarché"
+  },
+  "65140003": {
+    "displayName": "Carrefour"
+  },
+  "65170002": {
+    "displayName": "Carrefour Market"
+  },
+  "65190001": {
+    "displayName": "Total"
+  },
+  "65190002": {
+    "displayName": "Carrefour"
+  },
+  "65200003": {
+    "displayName": "Carrefour Market"
+  },
+  "65200005": {
+    "displayName": "Intermarché"
+  },
+  "65200006": {
+    "displayName": "TotalEnergies"
+  },
+  "65230002": {
+    "displayName": "Intermarché"
+  },
+  "65230003": {
+    "displayName": "TotalEnergies"
+  },
+  "65290001": {
+    "displayName": "Intermarché"
+  },
+  "65300004": {
+    "displayName": "Avia"
+  },
+  "65330001": {
+    "displayName": "Dyneff"
+  },
+  "65400001": {
+    "displayName": "Carrefour"
+  },
+  "65400004": {
+    "displayName": "Elan"
+  },
+  "65400005": {
+    "displayName": "Total Access"
+  },
+  "65410001": {
+    "displayName": "Total"
+  },
+  "65429001": {
+    "displayName": "E.Leclerc"
+  },
+  "65460003": {
+    "displayName": "TotalEnergies"
+  },
+  "65500002": {
+    "displayName": "Intermarché"
+  },
+  "65500003": {
+    "displayName": "E. Leclerc"
+  },
+  "65500004": {
+    "displayName": "TotalEnergies"
+  },
+  "65510001": {
+    "displayName": "Avia"
+  },
+  "65600001": {
+    "displayName": "Total"
+  },
+  "65600002": {
+    "displayName": "Elan"
+  },
+  "65800004": {
+    "displayName": "Intermarché"
   }
 }

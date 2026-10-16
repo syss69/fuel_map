@@ -1,7 +1,10 @@
+import { installStationLayers } from './station-layers';
+import { installGeolocation } from './map-geolocation';
+import { ViewportStations } from './ViewportStations';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import * as maplibregl from 'maplibre-gl';
-import type { Map, Marker } from 'maplibre-gl';
+import type { Map } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import mapWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { fetchStations } from './api';
@@ -28,7 +31,10 @@ const mapStyle = import.meta.env.VITE_MAP_STYLE_URL ?? 'https://tiles.openfreema
 export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
-  const markersRef = useRef<Marker[]>([]);
+  const layersRef = useRef<ReturnType<typeof installStationLayers> | null>(null);
+  const [mapInstance, setMapInstance] = useState<Map | null>(null);
+  const [locationMessage, setLocationMessage] = useState('');
+  const chooseRef = useRef<(id: string) => void>(() => {});
   const linkedStation = useRef(new URLSearchParams(location.search).get('station'));
   const linkedFuel = new URLSearchParams(location.search).get('fuel');
   const [selectedId, setSelectedId] = useState<string | null>(()=>new URLSearchParams(location.search).get('station'));
@@ -53,6 +59,14 @@ export default function App() {
     (station) => pickingFavorite || !fuelFilter || station.availableFuels.includes(fuelFilter),
   ), [stations.data, fuelFilter, pickingFavorite]);
 
+  chooseRef.current = id => {
+    if (pickingRef.current) return;
+    const station = visibleStations.find(item => item.id === id);
+    if (!station) return;
+    if (pickingFavoriteRef.current) { setDigestFavorite(station); setPickingFavorite(false); }
+    else if (!digestEditing) { history.replaceState(null, '', location.pathname); setSelectedId(id); }
+  };
+
   useEffect(() => {
     if (stations.data && selectedId && !visibleStations.some((station) => station.id === selectedId)) {
       setSelectedId(null);
@@ -66,14 +80,23 @@ export default function App() {
       style: mapStyle,
       center: PAU,
       zoom: 11,
+      locale: { 'GeolocateControl.FindMyLocation': 'Me localiser', 'GeolocateControl.LocationNotAvailable': 'Localisation indisponible : vérifiez les autorisations du navigateur' },
     });
     map.addControl(new maplibregl.NavigationControl(), 'top-right');
     mapRef.current = map;
+    setMapInstance(map);
+    const layers = installStationLayers(map, id => chooseRef.current(id), () => pickingRef.current);
+    layersRef.current = layers;
+    const removeGeolocation = installGeolocation(map, setLocationMessage);
     map.on('click',event=>{
       if(pickingRef.current){const point=event.lngLat.wrap();setDigestPoint({lat:point.lat,lng:point.lng});setPickingPoint(false);}
     });
     return () => {
+      removeGeolocation();
+      layers.remove();
+      layersRef.current = null;
       map.remove();
+      setMapInstance(null);
       mapRef.current = null;
     };
   }, []);
@@ -123,8 +146,10 @@ export default function App() {
     };
     if(map.isStyleLoaded())draw();
     map.on('style.load',draw);
+    map.on('idle',draw);
     return ()=>{
       map.off('style.load',draw);
+      map.off('idle',draw);
       if(map.getLayer('digest-zone-outline'))map.removeLayer('digest-zone-outline');
       if(map.getLayer('digest-zone-fill'))map.removeLayer('digest-zone-fill');
       if(map.getSource('digest-zone'))map.removeSource('digest-zone');
@@ -134,46 +159,21 @@ export default function App() {
     if(mapRef.current)mapRef.current.getCanvas().style.cursor=pickingPoint?'crosshair':'';
   },[pickingPoint]);
 
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    markersRef.current.forEach((marker) => marker.remove());
-    markersRef.current = visibleStations.map((station) => {
-      const element = document.createElement('button');
-      const hasFuel = station.availableFuels.length > 0;
-      const availabilityLabel = hasFuel ? 'Carburant disponible' : 'Aucun carburant déclaré disponible';
-      element.className = `station-marker${hasFuel ? ' station-marker-available' : ''}`;
-      element.type = 'button';
-      element.title = `${station.displayName} — ${availabilityLabel}`;
-      element.setAttribute('aria-label', `${pickingFavorite ? 'Choisir' : 'Afficher'} ${station.displayName} — ${availabilityLabel}`);
-      element.addEventListener('click', (event) => {
-        if(pickingFavoriteRef.current){
-          event.stopPropagation();
-          setDigestFavorite(station);
-          setPickingFavorite(false);
-        } else if(!pickingRef.current&&!digestEditing){history.replaceState(null,'',location.pathname);setSelectedId(station.id);}
-      });
-      return new maplibregl.Marker({ element })
-        .setLngLat([station.lng, station.lat])
-        .addTo(map);
-    });
-    return () => {
-      markersRef.current.forEach((marker) => marker.remove());
-      markersRef.current = [];
-    };
-  }, [visibleStations, pickingFavorite]);
+  useEffect(() => { layersRef.current?.update(visibleStations); }, [visibleStations]);
+  useEffect(() => { layersRef.current?.select(selectedId); }, [selectedId]);
 
   return (
     <main className="app-shell">
-      <div ref={containerRef} className="map" aria-label="Carte des stations-service des Pyrénées-Atlantiques" />
+      <div ref={containerRef} className="map" aria-label="Carte des stations-service des Pyrénées-Atlantiques et Hautes-Pyrénées" />
       <div className="masthead">
         <div>
           <h1><img className="brand-logo" src="/brand/trajetico-logo-full.png" alt="TrajetIco" width="2172" height="724" /></h1>
-          <p>Prix des stations autour de Pau et dans le département</p>
+          <p>Prix des stations autour de Pau, Tarbes et Lourdes</p>
           <nav className="map-navigation" aria-label="Navigation principale">
             <a href="/" aria-label="Retour à l’accueil">← Accueil</a>
             <a href="/mes-alertes">Mes alertes</a>
           </nav>
+          <span className="map-coverage">Couverture : 64 · 65</span>
         </div>
       </div>
       {!pickingFavorite && <fieldset className={`fuel-filter${filtersExpanded ? '' : ' fuel-filter-collapsed'}`}>
@@ -197,6 +197,11 @@ export default function App() {
           ))}
         </div>
       </fieldset>}
+      {locationMessage && <div className="location-message" role="status">{locationMessage}<button aria-label="Fermer le message de localisation" onClick={() => setLocationMessage('')}>×</button></div>}
+      {mapInstance && <ViewportStations map={mapInstance} stations={visibleStations} pickingFavorite={pickingFavorite}
+        disabled={pickingPoint || selectedId !== null || (digestOpen && !pickingFavorite)}
+        choose={id => { const station = visibleStations.find(s => s.id === id); if (station) mapInstance.easeTo({center:[station.lng, station.lat], zoom:Math.max(13,mapInstance.getZoom())}); chooseRef.current(id); }}
+        onOpen={() => { setFiltersExpanded(false); setSelectedId(null); }} />}
       {!digestOpen && <button className="digest-launcher" type="button" onClick={()=>{setSelectedId(null);setDigestOpen(true);}}>Digest du matin</button>}
       {digestEditing&&!editing&&<div className="digest-panel"><div className="digest-header"><h2>Mon digest</h2><a href="/mes-alertes" aria-label="Fermer le formulaire">×</a></div><div className="digest-body">{editor.isError?<><p role="alert">{editor.error.message}</p><button onClick={()=>void editor.refetch()}>Réessayer</button></>:<p>Chargement…</p>}</div></div>}
       {digestOpen && (!digestEditing||editing) && <DigestPanel editing={editing} favorite={digestFavorite} initialFuel={fuelFilter} point={digestPoint} picking={pickingPoint} pickingFavorite={pickingFavorite}
