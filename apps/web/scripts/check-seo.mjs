@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 const html=await readFile('dist/index.html','utf8');
 const shell=await readFile('dist/app-shell.html','utf8');
 assert.equal((html.match(/<h1>/g)||[]).length,1);
-assert.ok(html.includes('Où trouver du carburant pas cher dans le 64'));
+assert.ok(html.includes('Où trouver du carburant pas cher dans le 64 et le 65'));
 assert.ok(html.includes('Pau, Billère ou Lons'));
 assert.equal((html.match(/rel="canonical"/g)||[]).length,1);
 assert.ok(html.includes('href="https://trajetico.com/"'));

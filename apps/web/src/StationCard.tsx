@@ -1,6 +1,6 @@
 import { NameSuggestion } from './NameSuggestion';
 import { StationAlerts } from './Alerts';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchStation, Availability } from './api';
 import type { FuelCode } from './api';
@@ -25,13 +25,15 @@ function displayPrice(availability: Availability, price: number | null): string 
 }
 
 export function StationCard({ stationId, selectedFuel, onClose }: Props) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => { closeRef.current?.focus({ preventScroll: true }); }, [stationId]);
   const reporterId = getReporterId();
   const detail = useQuery({ queryKey: ['station', stationId, reporterId], queryFn: () => fetchStation(stationId, reporterId) });
 
   return (
     <aside className="station-card" aria-live="polite">
       <div className="station-card-toolbar">
-      <button className="close-button" type="button" onClick={onClose} aria-label="Fermer">
+      <button ref={closeRef} className="close-button" type="button" onClick={onClose} aria-label="Fermer">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
           <path d="m6 6 12 12M18 6 6 18" />
         </svg>

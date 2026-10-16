@@ -28,8 +28,8 @@ export class StationNamesService {
     await this.limits.consume('name-reporter', data.reporterId, 5, 3600);
     await this.limits.consume('name-ip', ip, 20, 3600);
     return this.transaction(async client => {
-      const station = (await client.query(`SELECT display_name FROM stations WHERE id=$1 AND department_code=$2
-        AND last_seen_at>=now()-interval '24 hours' FOR UPDATE`, [id, getConfig().FUEL_DATASET_DEPARTMENT])).rows[0];
+      const station = (await client.query(`SELECT display_name FROM stations WHERE id=$1 AND department_code=ANY($2::text[])
+        AND last_seen_at>=now()-interval '24 hours' FOR UPDATE`, [id, getConfig().FUEL_DATASET_DEPARTMENTS])).rows[0];
       if (!station) throw new NotFoundException('Station introuvable.');
       if (data.name === (station.display_name ?? 'Station-service')) throw new BadRequestException('Le nom proposé est identique au nom actuel.');
       const result = await client.query(`INSERT INTO station_name_suggestions(station_id,reporter_id,proposed_name,comment,original_name)
