@@ -1,0 +1,15 @@
+---
+- name: Verify privilege escalation
+  hosts: production, monitoring
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Check effective user
+      ansible.builtin.command: whoami
+      register: effective_user
+      changed_when: false
+
+    - name: Show effective user
+      ansible.builtin.debug:
+        var: effective_user.stdout

@@ -50,6 +50,31 @@ const {AlertsController}=require('./dist/alerts/alerts.module');
   await update(2300,'UNKNOWN');assert.equal(await count('notification_events'),1);
   await update(2300);assert.equal(await count('notification_events'),2);
   await processor.processEvents();assert.equal(await count('notification_events'),2);
+  // Repeated availability alerts must survive delivery and later imports on both devices.
+  await c.query('SAVEPOINT recurring_delivery');
+  await processor.deliver();
+  const recurringStart=pushes.length;
+  const recurringIds=new Set();
+  for(const unavailable of ['TEMPORARILY_UNAVAILABLE','UNAVAILABLE','PERMANENTLY_UNAVAILABLE','UNKNOWN']){
+   const beforeCycle=await count('notification_events');
+   await update(2300,unavailable);await processor.deliver();
+   assert.equal(await count('notification_events'),beforeCycle);
+   const beforeSend=pushes.length;
+   await update(2300);await processor.deliver();
+   assert.equal(await count('notification_events'),beforeCycle+1);
+   assert.equal(pushes.length,beforeSend+2);
+   const cyclePushes=pushes.slice(beforeSend);
+   assert.equal(cyclePushes[0].p.id,cyclePushes[1].p.id);
+   assert.ok(!recurringIds.has(cyclePushes[0].p.id),'New availability event must have a new notification tag');
+   recurringIds.add(cyclePushes[0].p.id);
+   const currentRule=(await alerts.list(sub.id)).find(r=>r.eventType==='FUEL_AVAILABLE');
+   assert.equal(currentRule.status,'ACTIVE');assert.equal(currentRule.frequency,'RECURRING');
+   await alerts.save(sub.id,{...rule,eventType:'FUEL_AVAILABLE',frequency:'RECURRING'});
+   await update(2300);await processor.processEvents();await processor.deliver();
+   assert.equal(pushes.length,beforeSend+2,'Unchanged availability must not send a duplicate');
+  }
+  assert.equal(pushes.length-recurringStart,8);
+  await c.query('ROLLBACK TO SAVEPOINT recurring_delivery');
   await update(2300,'UNKNOWN');
   await alerts.save(sub.id,{...rule,eventType:'FUEL_AVAILABLE',status:'DISABLED'});
   await c.query("UPDATE station_fuels SET availability='AVAILABLE' WHERE station_id=$1",[station]);

@@ -221,3 +221,41 @@ The web build prerenders the shared React landing into dist/index.html, with tit
 Caddy serves the homepage at /; other client routes fall back to app-shell.html, without landing content/schema. Private alert pages and digest action URLs receive noindex headers. Public routes set their own canonical and metadata at startup. The build generates robots.txt and a sitemap containing the landing. Run npm run test:seo --workspace=@fuel-map/web after building.
 
 Deploy by rebuilding web, including its Caddyfile. No API/DB changes. In Google Search Console verify domain ownership, submit https://trajetico.com/sitemap.xml, and inspect/request indexing of the homepage. Search engines determine indexing and rankings; neither is guaranteed by these changes.
+
+
+## Administration and station name corrections
+
+Open /admin directly (not linked in public navigation). This page uses a separate admin session and is excluded from indexing; subscriber magic-link sessions are unchanged.
+
+### Setup / deployment
+
+1. Back up PostgreSQL. Apply migration 0008 with npm run db:migrate (or the existing Docker migration command).
+2. Run npm run admin:password in an interactive terminal. The hidden prompt accepts 12–256 characters and prints only the scrypt hash assignment. Keep the single quotes around the hash in .env so Docker Compose preserves dollar signs.
+3. Set ADMIN_USERNAME and ADMIN_PASSWORD_HASH on the API only. Leaving either empty disables admin login. Never put these variables in VITE_* or commit the real .env.
+4. Rebuild/restart API and web. Visit /admin and sign in. When deploying behind Caddy, configure the existing TRUST_PROXY_HOPS correctly so rate limits identify the client; the API should remain inaccessible directly from the Internet.
+
+Admin sessions last eight hours, do not slide, and use HttpOnly/SameSite=Strict cookies (Secure in production), scoped to /api/v1/admin. Only token hashes are stored. Restarting with a different username or password hash invalidates previous sessions. Login is limited to 5 attempts per IP per 15 minutes, stored in PostgreSQL. All writes require an allowed Origin. No scheduler or email/push delivery is started by this feature.
+
+### API
+
+All request bodies are strict JSON. UUID path parameters are validated. Admin responses are private/no-store.
+
+- POST /api/v1/admin/login: {username,password}; sets the admin cookie, returns {ok:true}.
+- GET /api/v1/admin/session: {username,role:"ADMIN"}.
+- POST /api/v1/admin/logout: revokes the current session and clears its cookie.
+- POST /api/v1/stations/:id/name-suggestions: {reporterId,name,comment?}; name trimmed, 2–120 characters, comment trimmed up to 1000. Returns {ok:true}; does not change the published name. Station must be in the configured department and seen within 24 hours. Limit: 5 attempts/hour per reporter and 20/hour per IP (fixed windows). One pending proposal per station/reporter; duplicate returns 409. Reporter IDs confer no access and are never returned in admin list responses.
+- GET /api/v1/admin/name-suggestions?status=PENDING&page=1: status PENDING/APPROVED/REJECTED; returns {items,hasMore}, 25 per page. Items include station_id, current display_name, original_name, proposed_name, comment, address, city, official_id and review fields. No reporter ID.
+- PUT /api/v1/admin/name-suggestions/:id: {decision:"APPROVED",name,expectedName,reason?} or {decision:"REJECTED",expectedName,reason?}. expectedName is the nullable raw display_name from the admin list. reason is up to 1000 characters. Returns {ok:true}.
+- GET /api/v1/admin/stations?q=...&page=1: searches name/address/city/official ID, including stale stations. Returns {items,hasMore}, 25 per page, with id, official_id, display_name, address, city, last_seen_at, name_managed_by_admin.
+- PUT /api/v1/admin/stations/:id/name: {name,expectedName}; publishes a direct correction, returns {ok:true}.
+- GET /api/v1/admin/stations/:id/history?page=1: {items,hasMore}, 25 per page; old_name, new_name, admin_username, suggestion_id (null for direct edits), created_at.
+
+Invalid input: 400; missing/expired session: 401; bad Origin: 403; missing station/proposal: 404; duplicate pending proposal, stale expectedName or reviewed proposal: 409; rate limit: 429. Proposal approval and direct changes lock the station, publish its name and append audit history in one transaction. A 409 requires refreshing before deciding again. Other pending proposals are not automatically closed.
+
+Published names live in stations.display_name. Administrative changes set name_managed_by_admin: the official importer already preserves names, and db:apply-overrides now preserves these administrative names while continuing to update brand. No JSON files are written by the application. New reads and newly generated emails use the published name; previously saved email content is unchanged. Backups must include suggestions, name history and the stations table. Proposals/history have no TTL or automatic cleanup.
+
+### Verification
+
+Run npm run build, npm run typecheck, npm run lint, then npm run test:admin against a migrated PostgreSQL database containing at least one imported station. The suite uses real SQL and HTTP, rolls back all fixture writes and uses no email/push sender. It covers password checks, sessions, logout/expiry/credential changes, cookie flags, Origin, protected routes, rate limits, moderation, stale changes, row-lock contention, history, override precedence, and fuel/queue isolation.
+
+For a disposable browser preview, run node apps/api/admin.preview.cjs after building. It binds only to 127.0.0.1, creates an isolated test station and temporary admin credentials, starts no schedulers, and rolls back when you press Enter. Do not deploy this preview script as the API entrypoint.

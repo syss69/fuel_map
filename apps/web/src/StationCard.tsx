@@ -1,3 +1,4 @@
+import { NameSuggestion } from './NameSuggestion';
 import { StationAlerts } from './Alerts';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -50,6 +51,7 @@ export function StationCard({ stationId, selectedFuel, onClose }: Props) {
             </p>
             <StationSyncTime value={detail.data.lastSyncedAt} />
           </header>
+          <NameSuggestion key={`name-${stationId}`} stationId={stationId} name={detail.data.displayName} address={[detail.data.address, detail.data.city].filter(Boolean).join(", ")} reporterId={reporterId} />
           <div className="fuel-list">
             {detail.data.fuels.map((fuel) => {
               const discrepancy = detail.data.community.fuelDiscrepancies.find(item => item.fuelCode === fuel.code);

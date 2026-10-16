@@ -253,3 +253,24 @@ button { font: inherit; }
 .legal-page li { margin: 10px 0; }
 .legal-page footer { padding-top: 24px; border-top: 1px solid #dfe6db; }
 .landing-footer nav { flex-wrap: wrap; gap: 12px 24px; }
+/* Name corrections and the administrative workspace share the product palette. */
+.name-suggestion { margin: 12px 0 20px; }
+.name-correction-button { background: transparent; color: #245b46; border: 0; padding: 6px 0; text-align: left; text-decoration: underline; cursor: pointer; font: inherit; font-size: .85rem; }
+.name-suggestion form, .admin-card form, .admin-login { display: grid; gap: 12px; margin: 14px 0; }
+.name-suggestion label, .admin-page label { display: grid; gap: 6px; font-size: .9rem; font-weight: 600; }
+.name-suggestion input, .name-suggestion textarea, .admin-page input, .admin-page textarea, .admin-page select { width: 100%; min-width: 0; box-sizing: border-box; padding: 10px 12px; border: 1px solid #b9c9bf; border-radius: 10px; background: #fff; color: #173a2c; font: inherit; }
+.admin-page { max-width: 960px; }
+.admin-page nav { display: flex; flex-wrap: wrap; gap: 16px; }
+.admin-card { padding: 20px; margin: 18px 0; border: 1px solid #d4dfd7; border-radius: 18px; background: #fff; overflow-wrap: anywhere; }
+.admin-card h2 { margin-top: 0; font-size: 1.2rem; }
+.admin-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 12px 0; }
+.admin-page button, .name-suggestion form button { padding: 10px 15px; border: 1px solid #b9c9bf; border-radius: 12px; background: #edf4ee; color: #173a2c; font: inherit; cursor: pointer; }
+.admin-page button[aria-pressed="true"] { background: #245b46; color: white; }
+.admin-page button:disabled, .name-suggestion button:disabled { opacity: .55; cursor: default; }
+.admin-page :focus-visible, .name-suggestion :focus-visible { outline: 3px solid #d57c30; outline-offset: 3px; }
+.admin-login { max-width: 420px; }
+.admin-search { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 18px 0; }
+.admin-search label { flex: 1; min-width: 200px; }
+.admin-notice { padding: 10px; background: #fff1d9; border-radius: 10px; }
+.admin-comment { white-space: pre-wrap; }
+@media (max-width: 600px) { .admin-card { padding: 14px; } .admin-actions button { min-height: 44px; } }
