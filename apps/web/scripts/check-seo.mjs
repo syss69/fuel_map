@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 const html=await readFile('dist/index.html','utf8');
 const shell=await readFile('dist/app-shell.html','utf8');
 assert.equal((html.match(/<h1>/g)||[]).length,1);
-assert.ok(html.includes('Où trouver du carburant pas cher dans le 64 et le 65'));
+assert.ok(html.includes('Où trouver du carburant pas cher dans le 40, le 64 et le 65'));
 assert.ok(html.includes('Pau, Billère ou Lons'));
 assert.equal((html.match(/rel="canonical"/g)||[]).length,1);
 assert.ok(html.includes('href="https://trajetico.com/"'));
@@ -15,3 +15,5 @@ assert.ok(!shell.includes('rel="canonical"'));assert.ok(!shell.includes('website
 assert.ok((await readFile('dist/sitemap.xml','utf8')).includes('<loc>https://trajetico.com/</loc>'));
 assert.ok((await readFile('dist/robots.txt','utf8')).includes('Sitemap: https://trajetico.com/sitemap.xml'));
 console.log('SEO checks passed: prerendered content, single canonical/H1, valid website schema, independent SPA shell and discovery files.');
+
+for (const place of ['Landes (40)', 'Dax', 'Mont-de-Marsan']) assert.ok(html.includes(place));

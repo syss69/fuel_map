@@ -41,7 +41,7 @@ const meta=(key:string,content:string,property=false)=>{
   element.content=content;
 };
 if(isLanding)document.title=landingTitle;
-const description=isLanding?landingDescription:path==='/app'?'Explorez la carte des stations-service et comparez les prix et la disponibilité des carburants dans les Pyrénées-Atlantiques (64) et Hautes-Pyrénées (65) avec Trajetico.':path==='/notifications'?'Découvrez comment recevoir les alertes carburant et le digest email Trajetico.':'Informations et services Trajetico.';
+const description=isLanding?landingDescription:path==='/app'?'Explorez la carte des stations-service et comparez les prix et la disponibilité des carburants dans les Landes (40), Pyrénées-Atlantiques (64) et Hautes-Pyrénées (65) avec Trajetico.':path==='/notifications'?'Découvrez comment recevoir les alertes carburant et le digest email Trajetico.':'Informations et services Trajetico.';
 meta('description',description);meta('og:title',document.title,true);meta('og:description',description,true);
 meta('og:site_name','Trajetico',true);meta('og:url',`${siteOrigin}${path==='/'?'/':path}`,true);
 const indexable=['/','/app','/notifications','/privacy','/mentions-legales'].includes(path)&&!digestAction;

@@ -1,6 +1,6 @@
-# TrajetIco — Pyrénées-Atlantiques et Hautes-Pyrénées
+# TrajetIco — Landes, Pyrénées-Atlantiques et Hautes-Pyrénées
 
-Fuel-station map for départements 64 and 65. The API imports the current government dataset for the configured departments in one request; the map opens on Pau and remains navigable across the whole area.
+Fuel-station map for départements 40, 64 and 65. The API imports the current government dataset for the configured departments in one request; the map opens on Pau and remains navigable across the whole area.
 
 ## Stack and layout
 
@@ -100,7 +100,7 @@ Then run `npm run db:apply-overrides`. Missing names display as “Station-servi
 
 ## Configuration
 
-See `.env.example` for all settings. Backend configuration is validated at startup. `FUEL_IMPORT_CRON` defaults to every 15 minutes, `FUEL_DATASET_DEPARTMENTS` uses `64,65` in the example environment (legacy fallback: `FUEL_DATASET_DEPARTMENT`, then `64`), and the frontend map style defaults to OpenFreeMap Liberty.
+See `.env.example` for all settings. Backend configuration is validated at startup. `FUEL_IMPORT_CRON` defaults to every 15 minutes, `FUEL_DATASET_DEPARTMENTS` uses `40,64,65` in the example environment (legacy fallback: `FUEL_DATASET_DEPARTMENT`, then `64`), and the frontend map style defaults to OpenFreeMap Liberty.
 
 Migrations are intentionally never run automatically by the API. No Docker, authentication, external job queues, cloud infrastructure or history UI are included.
 
@@ -218,6 +218,8 @@ Deploy by rebuilding API and web. No new migration or database preparation is ne
 
 The web build prerenders the shared React landing into dist/index.html, with title, description, canonical URL and WebSite JSON-LD. The public origin is https://trajetico.com in apps/web/src/seo.ts. Landing content is readable without JavaScript. No live prices, review ratings or nationwide coverage are claimed.
 
+The landing layout lives in `apps/web/src/Landing.tsx` and its scoped `landing.css`. The responsive WebP previews in `apps/web/public/landing/` are captures of the actual map UI around Pau using the read-only preview fixtures (illustrative markers, no prices or personal data). They are static, not current availability; the caption retains map attribution. Updating this landing requires rebuilding only `web`. Keep the mobile and desktop captures and attribution together when refreshing the preview; do not load the interactive map on the landing.
+
 Caddy serves the homepage at /; other client routes fall back to app-shell.html, without landing content/schema. Private alert pages and digest action URLs receive noindex headers. Public routes set their own canonical and metadata at startup. The build generates robots.txt and a sitemap containing the landing. Run npm run test:seo --workspace=@fuel-map/web after building.
 
 Deploy by rebuilding web, including its Caddyfile. No API/DB changes. In Google Search Console verify domain ownership, submit https://trajetico.com/sitemap.xml, and inspect/request indexing of the homepage. Search engines determine indexing and rankings; neither is guaranteed by these changes.
@@ -263,7 +265,7 @@ For a disposable browser preview, run node apps/api/admin.preview.cjs after buil
 
 ## Coverage 64 + 65 and map layers (2026-10-16)
 
-Set API FUEL_DATASET_DEPARTMENTS=64,65. This comma-separated, validated, deduplicated list takes precedence over FUEL_DATASET_DEPARTMENT; if neither is set, coverage defaults to 64. An explicitly empty/invalid list is rejected. Both departments are fetched with one OR-filtered official export request. Import locking, transactions, IDs, fuel events and schedules are unchanged. Public station list/details, queues, community contributions and name suggestions use the same list and 24-hour freshness rule. API response shapes are unchanged. Digest radius searches include either side of the department boundary.
+Set API FUEL_DATASET_DEPARTMENTS=40,64,65. This comma-separated, validated, deduplicated list takes precedence over FUEL_DATASET_DEPARTMENT; if neither is set, coverage defaults to 64. An explicitly empty/invalid list is rejected. Both departments are fetched with one OR-filtered official export request. Import locking, transactions, IDs, fuel events and schedules are unchanged. Public station list/details, queues, community contributions and name suggestions use the same list and 24-hour freshness rule. API response shapes are unchanged. Digest radius searches include either side of the department boundary.
 
 Station points now use one MapLibre GeoJSON source and four layers (clusters, counts, points, selected outline). Clustering radius is 45 pixels through zoom 12. Fuel filtering happens before clustering. Availability colors retain their meaning; clusters are neutral. The expandable Stations dans cette zone list exposes the current filtered viewport in pages of 20 and also supports favorite selection. Collapsed lists mount no station entries. Digest zone and its single marker are preserved.
 
@@ -285,12 +287,12 @@ This enrichment command does not change database names. Apply the reviewed overr
 
 ### Deployment
 
-Back up PostgreSQL first. No migration or Docker topology change is needed. Set FUEL_DATASET_DEPARTMENTS=64,65 in the API environment, then rebuild/restart API and web. The API image includes the prepared overrides JSON for the compiled CLI:
+Back up PostgreSQL first. No migration or Docker topology change is needed. Set FUEL_DATASET_DEPARTMENTS=40,64,65 in the API environment, then rebuild/restart API and web. The API image includes the prepared overrides JSON for the compiled CLI:
 
     docker compose up -d --build api web
     docker compose exec -w /app/apps/api api node dist/cli/import-fuels.js
     docker compose exec -w /app/apps/api api node dist/cli/apply-overrides.js
-    docker compose exec -T postgres psql -U postgres -d fuel_map -c "SELECT department_code, count(*) AS total, count(*) FILTER (WHERE last_seen_at >= now() - interval '24 hours') AS fresh FROM stations WHERE department_code IN ('64','65') GROUP BY department_code ORDER BY department_code;"
+    docker compose exec -T postgres psql -U postgres -d fuel_map -c "SELECT department_code, count(*) AS total, count(*) FILTER (WHERE last_seen_at >= now() - interval '24 hours') AS fresh FROM stations WHERE department_code IN ('40','64','65') GROUP BY department_code ORDER BY department_code;"
 
 The import CLI retains existing application workers; running it on production is a real import and can generate real fuel events/deliveries. The automatic initial/scheduled import may already have imported 65 before the manual command, which is idempotent. Override application preserves admin names and existing brand handling. Names/history live in PostgreSQL and belong in its backups.
 
@@ -301,3 +303,26 @@ Run build, typecheck, lint, test:seo, test:coverage, test:map and test:names. Ex
 For browser checks, node apps/web/map.preview.cjs starts an isolated read-only fixture API on 127.0.0.1:3104 and web on 127.0.0.1:5176 (Enter to stop). /app uses the 166 saved stations; /checks/map.html simulates geolocation and compares old HTML markers with layers on identical data. /checks/mobile.html provides a 390 × 844 iframe for responsive checks. Fixture prices and statuses are synthetic; these helpers are development-only and are not included in the production web build.
 
 Browser verification on the 166-station fixture (2026-10-16): HTML station markers 166 → 0; total harness DOM elements 212 → 46. Both runs measured median frame interval 4 ms and p95 5 ms on this machine; this demonstrates DOM reduction, not a promised FPS improvement. Checked clustered clicks, filtered card dismissal, 65 deep link, mobile filters/list/card close, digest area/favorite picking, precise/imprecise/outside-coverage location, refusal, timeout and late-answer cancellation. Location cases use simulated coordinates, not the operator’s actual location.
+
+## Landes (40) expansion — 2026-10-18
+
+Coverage is now 40 + 64 + 65. Existing fallback remains the legacy department setting, then 64. Configure the API with FUEL_DATASET_DEPARTMENTS=40,64,65; no new migration or Docker topology change is needed (existing admin migrations must already be applied).
+
+The official export on 2026-10-18 supplied 103 Landes stations. Against the retained 2026-09-27 Chiffrex/OSM reference, 75 names meet every matching condition and 28 are skipped. See data/station-names-review-40.json and data/station-names-to-confirm-40.md. Existing overrides and administrative names are preserved. Unknown names display Station-service.
+
+Reproduce the report and merge prepared names locally:
+
+    npm run names:review -- --department=40 --stations=data/station-names-current-40.json --merge
+
+For a later refresh from the imported database, omit --stations. This only prepares overrides; apply them separately with npm run db:apply-overrides locally or the compiled CLI below. New stations are imported automatically but naming enrichment is not scheduled. Source snapshot: https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-des-carburants-en-france-flux-instantane-v2/exports/json?where=code_departement%3D%2240%22. Naming reference and ODbL attribution are recorded in the report.
+
+Deployment: back up PostgreSQL, update code and environment, then:
+
+    docker compose up -d --build api web
+    docker compose exec -w /app/apps/api api node dist/cli/import-fuels.js
+    docker compose exec -w /app/apps/api api node dist/cli/apply-overrides.js
+    docker compose exec -T postgres psql -U postgres -d fuel_map -c "SELECT department_code, count(*) AS total, count(*) FILTER (WHERE last_seen_at >= now() - interval '24 hours') AS fresh FROM stations WHERE department_code IN ('40','64','65') GROUP BY department_code ORDER BY department_code;"
+
+Check several Landes cards and previously moderated names after deployment. These production commands perform real imports; integration tests instead use rollback-only fixtures and no outbound senders.
+
+Local preview measurement (same browser, 1280×720, 90 camera steps, synthetic availability on saved station coordinates): 166 stations = 39,689 bytes; 269 stations = 64,777 bytes, uncompressed fixture JSON. Both runs used 47 DOM elements and zero station HTML markers. Median frame interval was 4 ms for both; p95 was 5 ms / 4 ms. These are local fixture measurements, not production timing guarantees. Reproduce using apps/web/map.preview.cjs and /checks/map.html → Comparer 64/65 et 40/64/65.

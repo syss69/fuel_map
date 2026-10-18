@@ -1,7 +1,232 @@
 {
+  "40000001": {
+    "displayName": "Carrefour"
+  },
+  "40000002": {
+    "displayName": "Carrefour"
+  },
+  "40000007": {
+    "displayName": "Intermarché"
+  },
+  "40000012": {
+    "displayName": "TotalEnergies"
+  },
+  "40006001": {
+    "displayName": "E.Leclerc"
+  },
+  "40100001": {
+    "displayName": "Carrefour"
+  },
+  "40100004": {
+    "displayName": "E.Leclerc"
+  },
+  "40100005": {
+    "displayName": "Intermarché"
+  },
+  "40100008": {
+    "displayName": "TotalEnergies"
+  },
+  "40110001": {
+    "displayName": "Système U"
+  },
+  "40110002": {
+    "displayName": "Intermarché"
+  },
+  "40120003": {
+    "displayName": "E. Leclerc"
+  },
+  "40130003": {
+    "displayName": "E.Leclerc"
+  },
+  "40130004": {
+    "displayName": "Intermarché"
+  },
+  "40140001": {
+    "displayName": "Elan"
+  },
+  "40140002": {
+    "displayName": "E. Leclerc"
+  },
+  "40140005": {
+    "displayName": "Netto"
+  },
+  "40150001": {
+    "displayName": "Intermarché"
+  },
+  "40160001": {
+    "displayName": "Super U"
+  },
+  "40160003": {
+    "displayName": "Intermarché"
+  },
+  "40160004": {
+    "displayName": "Total"
+  },
+  "40160005": {
+    "displayName": "Deghuillem"
+  },
+  "40170003": {
+    "displayName": "Super U"
+  },
+  "40180001": {
+    "displayName": "Total"
+  },
+  "40180002": {
+    "displayName": "Total Contact"
+  },
+  "40180003": {
+    "displayName": "Intermarché"
+  },
+  "40200001": {
+    "displayName": "Carrefour"
+  },
+  "40200002": {
+    "displayName": "E. Leclerc"
+  },
+  "40210001": {
+    "displayName": "Intermarché"
+  },
+  "40210004": {
+    "displayName": "E. Leclerc"
+  },
   "40220006": {
     "displayName": "Carrefour",
     "brand": "Carrefour"
+  },
+  "40230001": {
+    "displayName": "E.Leclerc"
+  },
+  "40230004": {
+    "displayName": "E.Leclerc"
+  },
+  "40230006": {
+    "displayName": "Leader Price"
+  },
+  "40240007": {
+    "displayName": "Station U"
+  },
+  "40250001": {
+    "displayName": "Carrefour"
+  },
+  "40260005": {
+    "displayName": "Intermarché"
+  },
+  "40260006": {
+    "displayName": "E.Leclerc"
+  },
+  "40260009": {
+    "displayName": "TotalEnergies"
+  },
+  "40270005": {
+    "displayName": "Total"
+  },
+  "40280005": {
+    "displayName": "E.Leclerc"
+  },
+  "40280006": {
+    "displayName": "E.Leclerc"
+  },
+  "40280008": {
+    "displayName": "Total"
+  },
+  "40280009": {
+    "displayName": "Station-service du Moun"
+  },
+  "40300003": {
+    "displayName": "Carrefour Market"
+  },
+  "40300005": {
+    "displayName": "Intermarché"
+  },
+  "40300008": {
+    "displayName": "TotalEnergies"
+  },
+  "40300009": {
+    "displayName": "Avia"
+  },
+  "40320001": {
+    "displayName": "Aire C"
+  },
+  "40360003": {
+    "displayName": "Carrefour"
+  },
+  "40370001": {
+    "displayName": "Carrefour"
+  },
+  "40370003": {
+    "displayName": "E.Leclerc"
+  },
+  "40380003": {
+    "displayName": "Carrefour"
+  },
+  "40400001": {
+    "displayName": "Total"
+  },
+  "40400005": {
+    "displayName": "Tucat"
+  },
+  "40410004": {
+    "displayName": "TotalEnergies"
+  },
+  "40410005": {
+    "displayName": "Avia"
+  },
+  "40420002": {
+    "displayName": "Intermarché"
+  },
+  "40420003": {
+    "displayName": "Total"
+  },
+  "40460001": {
+    "displayName": "Intermarché"
+  },
+  "40460002": {
+    "displayName": "Intermarché"
+  },
+  "40465002": {
+    "displayName": "Intermarché"
+  },
+  "40500001": {
+    "displayName": "Carrefour"
+  },
+  "40500002": {
+    "displayName": "Intermarché"
+  },
+  "40530001": {
+    "displayName": "Esso"
+  },
+  "40530002": {
+    "displayName": "Esso"
+  },
+  "40530003": {
+    "displayName": "Intermarché"
+  },
+  "40600002": {
+    "displayName": "E. Leclerc"
+  },
+  "40600005": {
+    "displayName": "TotalEnergies"
+  },
+  "40630004": {
+    "displayName": "TotalEnergies"
+  },
+  "40660005": {
+    "displayName": "Carrefour Market"
+  },
+  "40700001": {
+    "displayName": "Total"
+  },
+  "40700003": {
+    "displayName": "Intermarché"
+  },
+  "40990001": {
+    "displayName": "Total"
+  },
+  "40990002": {
+    "displayName": "E.Leclerc"
+  },
+  "40990004": {
+    "displayName": "Intermarché"
   },
   "64000001": {
     "displayName": "Auchan"

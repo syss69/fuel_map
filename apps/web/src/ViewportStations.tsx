@@ -25,7 +25,7 @@ export function ViewportStations({ map, stations, choose, disabled, pickingFavor
     <button type="button" className="viewport-toggle" aria-expanded={open} aria-controls="viewport-station-list" disabled={disabled}
       onClick={() => { if (!open) onOpen(); setOpen(!open); }}>Stations dans cette zone</button>
     {open && <section id="viewport-station-list" aria-label="Stations dans cette zone">
-      <p role="status">{inView.length} station{inView.length === 1 ? '' : 's'} dans la vue · 64 · 65</p>
+      <p role="status">{inView.length} station{inView.length === 1 ? '' : 's'} dans la vue · 40 · 64 · 65</p>
       {inView.length === 0 && <p>Aucune station correspondant aux filtres dans cette vue.</p>}
       <ul>{inView.slice((current - 1) * 20, current * 20).map(station => <li key={station.id}>
         <button onClick={() => { choose(station.id); setOpen(false); }}>

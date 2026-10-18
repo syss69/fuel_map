@@ -22,7 +22,7 @@ const map = new Map({ container: 'map', style: 'https://tiles.openfreemap.org/st
 map.on('moveend', () => element('camera').textContent = `Center: ${map.getCenter().lng.toFixed(4)}, ${map.getCenter().lat.toFixed(4)}; zoom: ${map.getZoom().toFixed(2)}`);
 installGeolocation(map, message => element('geo-status').textContent = `Requests: ${geoRequests} — ${message}`);
 let layers = installStationLayers(map, id => element('status').textContent = `Selected: ${id}`, () => false);
-const stations: StationMarker[] = (await (await fetch('http://127.0.0.1:3104/api/v1/stations')).json()).stations;
+const stations: (StationMarker & { department: string })[] = (await (await fetch('http://127.0.0.1:3104/api/v1/stations')).json()).stations;
 layers.update(stations); element('status').textContent = `${stations.length} stations; geolocation requests: ${geoRequests}`;
 element('pan').onclick = () => map.jumpTo({ center: [-.4, 43.3], zoom: 11 });
 async function measure() {
@@ -46,4 +46,15 @@ element('benchmark').onclick = async () => {
   await new Promise(resolve => map.once('idle', resolve));
   const after = await measure(); element('results').textContent = JSON.stringify({ stations: stations.length, htmlMarkers: before, geojsonLayers: after }, null, 2);
   (element('benchmark') as HTMLButtonElement).disabled = false;
+};
+
+element('coverage-benchmark').onclick = async () => {
+  const button = element('coverage-benchmark') as HTMLButtonElement; button.disabled = true;
+  const results = [];
+  for (const rows of [stations.filter(s => s.department !== '40'), stations]) {
+    map.jumpTo({ center: [-.37, 43.2951], zoom: 11 });
+    layers.update(rows); await new Promise(resolve => map.once('idle', resolve));
+    results.push({ stations: rows.length, responseBytes: new TextEncoder().encode(JSON.stringify({ stations: rows })).length, ...await measure() });
+  }
+  element('results').textContent = JSON.stringify(results, null, 2); button.disabled = false;
 };

@@ -17,3 +17,12 @@ assert.deepEqual(mergeOverrides({}, [{ ...accepted[0], display_name: 'Existing D
 assert.equal(mergeOverrides({}, accepted)[s.official_id].displayName, 'Super U');
 assert.equal(parseCsv('id_station_officiel,nom_normalise\r\n65000001,"Shop, ""Tarbes"""\r\n')[0].nom_normalise, 'Shop, "Tarbes"');
 console.log('Name matching: <=200m boundary, coordinates, duplicate IDs, address checks, CSV and manual-name precedence passed.');
+
+const landes = { ...s, official_id: '40000001', department_code: '40', city: 'Dax', postal_code: '40100' };
+const landesRef = { ...r, id_station_officiel: landes.official_id, ville: 'Dax', code_postal: '40100' };
+const landesAccepted = review([landes], [landesRef]).accepted;
+assert.equal(landesAccepted.length, 1);
+assert.equal(review([landes], [{ ...landesRef, adresse: 'Other' }]).accepted.length, 0);
+const merged = mergeOverrides(existing, landesAccepted);
+for (const id of Object.keys(existing)) assert.deepEqual(merged[id], existing[id]);
+assert.equal(merged[landes.official_id].displayName, 'Super U');

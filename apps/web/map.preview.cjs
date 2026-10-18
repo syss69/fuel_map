@@ -2,7 +2,7 @@
 const http = require('node:http'), fs = require('node:fs'), path = require('node:path'), { randomUUID } = require('node:crypto');
 const root = path.resolve(__dirname, '../..');
 const overrides = JSON.parse(fs.readFileSync(path.join(root, 'data/station-overrides.json')));
-const rows = [...JSON.parse(fs.readFileSync(path.join(root, 'data/station-names-current.json'))), ...JSON.parse(fs.readFileSync(path.join(root, 'data/station-names-current-65.json')))];
+const rows = [...JSON.parse(fs.readFileSync(path.join(root, 'data/station-names-current.json'))), ...JSON.parse(fs.readFileSync(path.join(root, 'data/station-names-current-65.json'))), ...JSON.parse(fs.readFileSync(path.join(root, 'data/station-names-current-40.json')))];
 const stations = rows.map((row, index) => ({ id: randomUUID(), officialId: row.official_id, department: row.department_code || '64', displayName: overrides[row.official_id]?.displayName || row.display_name || 'Station-service',
   brand: null, address: row.address, city: row.city, lat: row.lat, lng: row.lng, availableFuels: index % 4 === 0 ? [] : index % 3 === 0 ? ['SP98'] : ['GAZOLE', 'E10'] }));
 const now = new Date().toISOString();
