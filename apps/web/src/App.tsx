@@ -164,16 +164,16 @@ export default function App() {
 
   return (
     <main className="app-shell">
-      <div ref={containerRef} className="map" aria-label="Carte des stations-service des Pyrénées-Atlantiques et Hautes-Pyrénées" />
+      <div ref={containerRef} className="map" aria-label="Carte des stations-service des Landes, Pyrénées-Atlantiques et Hautes-Pyrénées" />
       <div className="masthead">
         <div>
           <h1><img className="brand-logo" src="/brand/trajetico-logo-full.png" alt="TrajetIco" width="2172" height="724" /></h1>
-          <p>Prix des stations autour de Pau, Tarbes et Lourdes</p>
+          <p>Prix des stations autour de Pau, Tarbes, Lourdes et Dax</p>
           <nav className="map-navigation" aria-label="Navigation principale">
             <a href="/" aria-label="Retour à l’accueil">← Accueil</a>
             <a href="/mes-alertes">Mes alertes</a>
           </nav>
-          <span className="map-coverage">Couverture : 64 · 65</span>
+          <span className="map-coverage">Couverture : 40 · 64 · 65</span>
         </div>
       </div>
       {!pickingFavorite && <fieldset className={`fuel-filter${filtersExpanded ? '' : ' fuel-filter-collapsed'}`}>

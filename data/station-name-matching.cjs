@@ -58,7 +58,7 @@ function mergeOverrides(existing, accepted) {
 async function main() {
   const arg = name => process.argv.find(value => value.startsWith(`--${name}=`))?.split('=').slice(1).join('=');
   const department = arg('department') || '65';
-  if (!/^(64|65)$/.test(department)) throw new Error('Use --department=64 or --department=65');
+  if (!/^(40|64|65)$/.test(department)) throw new Error('Use --department=40, --department=64 or --department=65');
   let stations;
   if (arg('stations')) stations = JSON.parse(fs.readFileSync(path.resolve(root, arg('stations')), 'utf8').replace(/^\uFEFF/, ''));
   else {

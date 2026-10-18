@@ -30,7 +30,7 @@ export function installGeolocation(map: Map, notify: (message: string) => void) 
       releaseClick = () => element.removeEventListener('click', clicked, true);
       return element;
     };
-    control.on('geolocate', () => { finish(); notify('Votre position est affichée. Couverture : 64 · 65.'); });
+    control.on('geolocate', () => { finish(); notify('Votre position est affichée. Couverture : 40 · 64 · 65.'); });
     control.on('error', event => {
       finish();
       notify(event.code === 1 ? 'Localisation refusée. Vous pouvez déplacer la carte manuellement.'
