@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
 import Landing from './Landing';
 import { LegalPage } from './LegalPages';
+const Admin = lazy(() => import('./Admin'));
 const App = lazy(() => import('./App'));
 import { DigestLink } from './DigestPanel';
 import { AlertsPage, NotificationsPage } from './Alerts';
@@ -22,7 +23,8 @@ if (location.pathname === '/' && digestAction !== 'verify' && digestAction !== '
   history.replaceState(null, '', '/app' + location.search + location.hash);
 }
 const path = location.pathname.replace(/\/$/, '') || '/';
-const page = path === '/mes-alertes' ? <AlertsPage />
+const page = path === '/admin' ? <Admin />
+  : path === '/mes-alertes' ? <AlertsPage />
   : path === '/notifications' ? <NotificationsPage />
   : digestAction === 'verify' || digestAction === 'unsubscribe' ? <DigestLink action={digestAction} />
   : path === '/privacy' ? <LegalPage privacy />
@@ -30,7 +32,7 @@ const page = path === '/mes-alertes' ? <AlertsPage />
   : path === '/app' ? <App />
   : path === '/' ? <Landing />
   : <main className="alerts-page"><h1>Page introuvable</h1><a href="/">Accueil</a> · <a href="/app">Ouvrir la carte</a></main>;
-if (path !== '/' || digestAction) document.title = path === '/privacy' ? 'Confidentialité — Trajetico' : path === '/mentions-legales' ? 'Mentions légales — Trajetico' : path === '/mes-alertes' ? 'Mes alertes — Trajetico' : path === '/notifications' ? 'Les alertes — Trajetico' : 'Carte et carburants — Trajetico';
+if (path !== '/' || digestAction) document.title = path === '/admin' ? 'Administration — Trajetico' : path === '/privacy' ? 'Confidentialité — Trajetico' : path === '/mentions-legales' ? 'Mentions légales — Trajetico' : path === '/mes-alertes' ? 'Mes alertes — Trajetico' : path === '/notifications' ? 'Les alertes — Trajetico' : 'Carte et carburants — Trajetico';
 const isLanding=path==='/'&&!digestAction;
 const meta=(key:string,content:string,property=false)=>{
   const attr=property?'property':'name';
@@ -39,7 +41,7 @@ const meta=(key:string,content:string,property=false)=>{
   element.content=content;
 };
 if(isLanding)document.title=landingTitle;
-const description=isLanding?landingDescription:path==='/app'?'Explorez la carte des stations-service et comparez les prix et la disponibilité des carburants dans les Pyrénées-Atlantiques avec Trajetico.':path==='/notifications'?'Découvrez comment recevoir les alertes carburant et le digest email Trajetico.':'Informations et services Trajetico.';
+const description=isLanding?landingDescription:path==='/app'?'Explorez la carte des stations-service et comparez les prix et la disponibilité des carburants dans les Landes (40), Pyrénées-Atlantiques (64) et Hautes-Pyrénées (65) avec Trajetico.':path==='/notifications'?'Découvrez comment recevoir les alertes carburant et le digest email Trajetico.':'Informations et services Trajetico.';
 meta('description',description);meta('og:title',document.title,true);meta('og:description',description,true);
 meta('og:site_name','Trajetico',true);meta('og:url',`${siteOrigin}${path==='/'?'/':path}`,true);
 const indexable=['/','/app','/notifications','/privacy','/mentions-legales'].includes(path)&&!digestAction;
@@ -52,7 +54,7 @@ if(isLanding){const schema=document.createElement('script');schema.id='website-s
 const app=(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      {isLanding?page:<Suspense fallback={<p role="status">Chargement de la carte…</p>}>{page}</Suspense>}
+    {isLanding?page:<Suspense fallback={<p role="status">{path === '/admin' ? 'Chargement de l’administration…' : 'Chargement de la carte…'}</p>}>{page}</Suspense>}
     </QueryClientProvider>
   </StrictMode>
 );

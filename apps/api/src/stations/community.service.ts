@@ -102,8 +102,8 @@ export class CommunityService {
     const client = await this.db.pool.connect();
     try {
       await client.query('BEGIN');
-      const station = await client.query(`SELECT id FROM stations WHERE id=$1 AND department_code=$2
-        AND last_seen_at>=now()-interval '24 hours' FOR UPDATE`, [stationId, getConfig().FUEL_DATASET_DEPARTMENT]);
+      const station = await client.query(`SELECT id FROM stations WHERE id=$1 AND department_code=ANY($2::text[])
+        AND last_seen_at>=now()-interval '24 hours' FOR UPDATE`, [stationId, getConfig().FUEL_DATASET_DEPARTMENTS]);
       if (!station.rowCount) throw new NotFoundException('Station introuvable');
       // The official importer also locks the station before updating its fuel rows.
       await action(client);

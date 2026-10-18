@@ -25,7 +25,7 @@ interface FuelRow {
 
 @Injectable()
 export class StationsService {
-  private readonly department = getConfig().FUEL_DATASET_DEPARTMENT;
+  private readonly departments = getConfig().FUEL_DATASET_DEPARTMENTS;
 
   constructor(private readonly db: DatabaseService, private readonly queues: QueueService, private readonly community: CommunityService) {}
 
@@ -38,9 +38,9 @@ export class StationsService {
                     WHERE sf.station_id = stations.id AND sf.availability = 'AVAILABLE'
                     ORDER BY ft.sort_order) AS available_fuels
        FROM stations
-       WHERE department_code = $1 AND last_seen_at >= now() - interval '24 hours'
+       WHERE department_code = ANY($1::text[]) AND last_seen_at >= now() - interval '24 hours'
        ORDER BY city NULLS LAST, official_id`,
-      [this.department],
+      [this.departments],
     );
     const lastImport = await this.db.pool.query<{ updated_at: Date | null }>(
       `SELECT max(finished_at) AS updated_at FROM import_runs WHERE status = 'SUCCESS'`,
@@ -65,8 +65,8 @@ export class StationsService {
       `SELECT id, official_id, display_name, brand, address, city, last_seen_at,
               ST_Y(location::geometry) AS lat, ST_X(location::geometry) AS lng
        FROM stations
-       WHERE id = $1 AND department_code = $2 AND last_seen_at >= now() - interval '24 hours'`,
-      [id, this.department],
+       WHERE id = $1 AND department_code = ANY($2::text[]) AND last_seen_at >= now() - interval '24 hours'`,
+      [id, this.departments],
     );
     const station = stationResult.rows[0];
     if (!station) throw new NotFoundException('Station introuvable');

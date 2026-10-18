@@ -20,7 +20,7 @@ async function main(): Promise<void> {
   try {
     for (const [officialId, value] of Object.entries(overrides)) {
       const result = await pool.query(
-        `UPDATE stations SET display_name = $2, brand = $3, updated_at = now() WHERE official_id = $1`,
+        `UPDATE stations SET display_name = CASE WHEN name_managed_by_admin THEN display_name ELSE $2 END, brand = $3, updated_at = now() WHERE official_id = $1`,
         [officialId, value.displayName ?? null, value.brand ?? null],
       );
       updated += result.rowCount ?? 0;

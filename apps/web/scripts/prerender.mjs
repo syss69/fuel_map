@@ -17,7 +17,7 @@ try {
     <meta property="og:url" content="${siteOrigin}/" />
     <meta property="og:site_name" content="Trajetico" />
     <meta property="og:image" content="${siteOrigin}/brand/trajetico-logo-full.png" />
-    <meta property="og:image:alt" content="Trajetico — comparez les carburants dans le 64" />
+    <meta property="og:image:alt" content="Trajetico — comparez les carburants dans le 40, le 64 et le 65" />
     <meta name="twitter:card" content="summary" />
     <script id="website-schema" type="application/ld+json">${JSON.stringify(websiteSchema).replaceAll('<','\\u003c')}</script>`;
   const html=template.replace(/<title>.*?<\/title>/,`<title>${escape(landingTitle)}</title>`)

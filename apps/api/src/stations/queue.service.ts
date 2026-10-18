@@ -39,9 +39,9 @@ export class QueueService {
     try {
       await client.query('BEGIN');
       const station = await client.query(
-        `SELECT id FROM stations WHERE id = $1 AND department_code = $2
+        `SELECT id FROM stations WHERE id = $1 AND department_code = ANY($2::text[])
          AND last_seen_at >= now() - interval '24 hours' FOR UPDATE`,
-        [stationId, getConfig().FUEL_DATASET_DEPARTMENT],
+        [stationId, getConfig().FUEL_DATASET_DEPARTMENTS],
       );
       if (!station.rowCount) throw new NotFoundException('Station introuvable');
       await client.query(

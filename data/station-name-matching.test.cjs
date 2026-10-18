@@ -1,0 +1,28 @@
+const assert = require('node:assert/strict');
+const { parseCsv, review, distance, mergeOverrides } = require('./station-name-matching.cjs');
+const s = { official_id: '65000001', department_code: '65', address: 'Rue du Béarn', city: 'Tarbes', postal_code: '65000', lat: 0, lng: 0 };
+const r = { id_station_officiel: s.official_id, nom_normalise: 'Super U', adresse: 'RUE DU BEARN', ville: 'TARBES', code_postal: '65000', latitude_osm: 0, longitude_osm: 0 };
+assert.equal(review([s], [r]).accepted.length, 1);
+const at = metres => ({ ...r, longitude_osm: metres / 6371008.8 * 180 / Math.PI });
+assert.ok(Math.abs(distance(s, at(200)) - 200) < 1e-9);
+assert.equal(review([s], [at(200)]).accepted.length, 1);
+assert.equal(review([s], [at(200.001)]).skipped.length, 1);
+for (const candidate of [{ ...r, latitude_osm: null }, { ...r, longitude_osm: '' }, { ...r, latitude_osm: 91 }, { ...r, nom_normalise: 'Station-service' }, { ...r, ville: '' }, { ...r, code_postal: '64000' }]) assert.equal(review([s], [candidate]).accepted.length, 0);
+assert.equal(review([s], [r, r]).accepted.length, 0); assert.equal(review([s], []).skipped.length, 1);
+const existing = { '64000001': { displayName: 'Manual 64', brand: 'Brand' }, [s.official_id]: { displayName: 'Manual 65' } };
+const accepted = review([s], [r]).accepted;
+assert.deepEqual(mergeOverrides(existing, accepted), existing);
+assert.deepEqual(mergeOverrides({}, [{ ...accepted[0], name_managed_by_admin: true }]), {});
+assert.deepEqual(mergeOverrides({}, [{ ...accepted[0], display_name: 'Existing DB name' }]), {});
+assert.equal(mergeOverrides({}, accepted)[s.official_id].displayName, 'Super U');
+assert.equal(parseCsv('id_station_officiel,nom_normalise\r\n65000001,"Shop, ""Tarbes"""\r\n')[0].nom_normalise, 'Shop, "Tarbes"');
+console.log('Name matching: <=200m boundary, coordinates, duplicate IDs, address checks, CSV and manual-name precedence passed.');
+
+const landes = { ...s, official_id: '40000001', department_code: '40', city: 'Dax', postal_code: '40100' };
+const landesRef = { ...r, id_station_officiel: landes.official_id, ville: 'Dax', code_postal: '40100' };
+const landesAccepted = review([landes], [landesRef]).accepted;
+assert.equal(landesAccepted.length, 1);
+assert.equal(review([landes], [{ ...landesRef, adresse: 'Other' }]).accepted.length, 0);
+const merged = mergeOverrides(existing, landesAccepted);
+for (const id of Object.keys(existing)) assert.deepEqual(merged[id], existing[id]);
+assert.equal(merged[landes.official_id].displayName, 'Super U');

@@ -1,3 +1,4 @@
+import { passwordHashPattern } from './admin/password';
 import { z } from 'zod';
 import { config as loadEnv } from 'dotenv';
 import path from 'node:path';
@@ -5,11 +6,20 @@ import path from 'node:path';
 loadEnv({ path: path.resolve(process.cwd(), '../../.env') });
 loadEnv();
 
+const departmentCode = z.string().regex(/^(?:0[1-9]|1[0-9]|2[1-9AB]|[3-8][0-9]|9[0-5]|97[1-46])$/, 'Code de département invalide');
+export function parseDepartments(multiple?: string, legacy?: string): string[] {
+  const value = multiple === undefined ? (legacy ?? '64') : multiple;
+  return [...new Set(z.array(departmentCode).min(1).parse(value.split(',').map(code => code.trim().toUpperCase())))];
+}
+
 const schema = z.object({
+  ADMIN_USERNAME: z.preprocess(v => v === '' ? undefined : v, z.string().min(1).max(120).optional()),
+  ADMIN_PASSWORD_HASH: z.preprocess(v => v === '' ? undefined : v, z.string().regex(passwordHashPattern).optional()),
   DATABASE_URL: z.string().url(),
   API_PORT: z.coerce.number().int().positive().default(3000),
   FRONTEND_ORIGIN: z.string().url().default('http://localhost:5173'),
   FUEL_DATASET_DEPARTMENT: z.string().min(1).default('64'),
+  FUEL_DATASET_DEPARTMENTS: z.string().optional(),
   FUEL_IMPORT_CRON: z.string().min(1).default('*/15 * * * *'),
   FUEL_API_BASE_URL: z.string().url().default('https://data.economie.gouv.fr'),
   RESEND_API_KEY: z.string().optional(),
@@ -21,7 +31,7 @@ const schema = z.object({
   EMAIL_FROM: z.string().optional(),
   DIGEST_ENABLED: z.enum(['true', 'false']).default('true'),
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
-});
+}).transform(config => ({ ...config, FUEL_DATASET_DEPARTMENTS: parseDepartments(config.FUEL_DATASET_DEPARTMENTS, config.FUEL_DATASET_DEPARTMENT) }));
 
 export type AppConfig = z.infer<typeof schema>;
 let cached: AppConfig | undefined;

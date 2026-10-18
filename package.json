@@ -17,7 +17,13 @@
     "db:seed": "npm run seed --workspace=@fuel-map/database",
     "db:generate": "npm run generate --workspace=@fuel-map/database",
     "db:apply-overrides": "npm run apply-overrides --workspace=@fuel-map/api",
-    "import:fuels": "npm run import:fuels --workspace=@fuel-map/api"
+    "import:fuels": "npm run import:fuels --workspace=@fuel-map/api",
+    "admin:password": "npm run admin:password --workspace=@fuel-map/api",
+    "test:admin": "node apps/api/admin.integration.cjs",
+    "names:review": "node data/review-station-names.cjs",
+    "test:coverage": "node apps/api/coverage.integration.cjs",
+    "test:map": "node apps/web/map.behavior.test.cjs",
+    "test:names": "node data/station-name-matching.test.cjs"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
