@@ -66,7 +66,8 @@ jobs:
           IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
           PROD_HOST: ${{ vars.PROD_HOST }}
         run: |
-          -i ~/.ssh/id_ed25519 \
+          ssh \  
+            -i ~/.ssh/id_ed25519 \
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
             trajetico@"$PROD_HOST" \
