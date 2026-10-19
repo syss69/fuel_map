@@ -44,4 +44,13 @@ jobs:
           push: true
           tags: ghcr.io/syss69/fuel-map-web:${{ github.event.workflow_run.head_sha }}
 
-      
+  deploy:
+    name: Deploy to production server
+    needs: publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure SSH
+        env: 
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }} 
