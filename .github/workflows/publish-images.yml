@@ -61,12 +61,12 @@ jobs:
           printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
-      - name: Pull and start tested Images
+      - name: Pull and start tested images
         env:
           IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
           PROD_HOST: ${{ vars.PROD_HOST }}
         run: |
-          ssh \  
+          ssh \
             -i ~/.ssh/id_ed25519 \
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
@@ -75,6 +75,5 @@ jobs:
              IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.production.yml pull api web && \
              IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.production.yml up -d --no-build api web && \
              IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.production.yml ps"
-
       - name: Check public website
         run: curl --fail --silent --show-error --max-time 15 https://trajetico.com/ > /dev/null
