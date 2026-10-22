@@ -31,6 +31,7 @@ RUN npm ci --omit=dev
 
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/packages/database/dist ./packages/database/dist
+COPY --from=builder /app/packages/database/migrations ./packages/database/migrations
 COPY --from=builder /app/data/station-overrides.json ./data/station-overrides.json
 
 USER node
