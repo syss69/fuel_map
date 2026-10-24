@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgis/postgis:18-3.6
+    container_name: staging-fuel-map-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fuel_map
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d fuel_map"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  api:
+    image: ghcr.io/syss69/fuel-map-api:${IMAGE_TAG}
+    container_name: staging-trajetico-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    expose:
+      - "3000"
+
+  web:
+    image: ghcr.io/syss69/fuel-map-web:${IMAGE_TAG}
+    container_name: staging-trajetico-web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      SITE_ADDRESS: dev.trajetico.com
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  staging_postgres_data:
+  staging_caddy_data:
+  staging_caddy_config:
