@@ -14,7 +14,7 @@ services:
       retries: 20
       start_period: 10s
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - staging_postgres_data:/var/lib/postgresql
 
   api:
     image: ghcr.io/syss69/fuel-map-api:${IMAGE_TAG}
@@ -41,8 +41,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - caddy_data:/data
-      - caddy_config:/config
+      - staging_caddy_data:/data
+      - staging_caddy_config:/config
 
 volumes:
   staging_postgres_data:
