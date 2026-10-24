@@ -77,7 +77,7 @@ jobs:
             trajetico@"$PROD_HOST" \
             "cd /home/trajetico/trajetico/fuel_map && \
              IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.production.yml pull api web && \
-             IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.production.yml run --rm api node packages/database/dist/migrate.js && \
+             IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.production.yml run --rm api node packages/database/dist/src/migrate.js && \
              IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.production.yml up -d --no-build api web && \
              IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.production.yml ps"
       - name: Check public website
