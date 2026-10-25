@@ -39,7 +39,7 @@ export default function Admin() {
   const needsLogin = !loggedIn || (active.error instanceof AdminApiError && active.error.status === 401);
   return <main className="alerts-page admin-page">
     <nav aria-label="Navigation"><a href="/">← Accueil</a><a href="/app">Carte</a></nav>
-    <h1>Administration "Hello from staging!"</h1>
+    <h1>Administration "Hello from staging! This text can be showed only after approve"</h1>
     {error && <p role="alert" className="error">{error}</p>}
     {message && <p role="status">{message}</p>}
     {session.isPending ? <p role="status">Chargement…</p> : needsLogin ? <AdminLogin busy={busy} login={async (username, password) => {
