@@ -6,3 +6,22 @@ all:
           ansible_host: SERVER_IP
           ansible_user: trajetico
           ansible_python_interpreter: /usr/bin/python3
+
+    staging:
+      hosts:
+        staging1:
+          ansible_host: SERVER_IP
+          ansible_user: trajetico
+          ansible_python_interpreter: /usr/bin/python3
+
+
+    monitoring:
+      hosts:
+        monitor1:
+          ansible_host: SERVER_IP
+          ansible_user: trajetico
+          ansible_python_interpreter: /usr/bin/python3
+          tailscale_ip: TAILSCALE_IP
+
+  vars:
+    public_url: "https://trajetico.com/"

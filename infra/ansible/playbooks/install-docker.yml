@@ -1,6 +1,6 @@
 ---
 - name: Install Docker
-  hosts: monitoring
+  hosts: "{{ docker_target }}"
   become: true
   gather_facts: false
 

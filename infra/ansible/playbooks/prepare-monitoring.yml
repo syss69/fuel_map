@@ -41,3 +41,5 @@
         - /opt/monitoring/prometheus
         - /opt/monitoring/grafana
         - /opt/monitoring/alertmanager
+        - /opt/monitoring/blackbox
+        - /opt/monitoring/prometheus/rules

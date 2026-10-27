@@ -16,6 +16,40 @@
     group: root
     mode: "0644"
 
+- name: Install Blacbox exporter config
+  ansible.builtin.template:
+    src: blackbox.yml.j2
+    dest: /opt/monitoring/blackbox/blackbox.yml
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Install Alertmanager configuration
+  ansible.builtin.template:
+    src: alertmanager.yml.j2
+    dest: /opt/monitoring/alertmanager/alertmanager.yml
+    owner: "65534"
+    group: "65344"
+    mode: "0600"
+  notify: Restart Alertmanager
+
+- name: Install Prometheus alert rules
+  ansible.builtin.template:
+    src: alerts.yml.j2
+    dest: /opt/monitoring/prometheus/rules/alerts.yml
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart prometheus
+
+- name: Allow Grafana from Tailscale network
+  community.general.ufw:
+    rule: allow
+    direction: in
+    interface: tailscale0
+    port: "3000"
+    proto: tcp
+
 - name: Start monitoring containers
   community.docker.docker_compose_v2:
     project_src: /opt/monitoring

@@ -1,0 +1,19 @@
+---
+- name: Authorize Github Actions deploy key
+  hosts: "{{ target }}"
+  become: true
+
+  vars:
+    deployment_user: trajetico
+    deploy_public_key_path: ""
+
+  tasks:
+    - name: Add Github Actions deploy public key
+      ansible.builtin.blockinfile:
+        path: "/home/{{deployment_user}}/.ssh/authorized_keys"
+        create: true
+        owner: "{{deployment_user}}"
+        group: "{{deployment_user}}"
+        mode: "0600"
+        marker: "# {mark} GITHUB ACTIONS DEPLOY KEY"
+        block: "{{ lookup('ansible.builtin.file', deploy_public_key_path) }}"

@@ -1,0 +1,54 @@
+groups:
+  - name: availability
+    rules:
+      - alert: WebsiteDown
+        expr: probe_success{job="blackbox-http", service="trajetico-web"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: trajetico-web
+        annotations:
+          summary: "trajetico.com is unavailable"
+          description: "Blackbox Exporter could not reach the public website for 2 minutes."
+
+      - alert: ProductionServerDown
+        expr: up{job="production-nodes", server="prod1"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: infrastructure
+          server: prod1
+        annotations:
+          summary: "prod1 is unavailable"
+          description: "Prometheus could not scrape node_exporter on prod1 for 2 minutes."
+
+  - name: capacity
+    rules:
+      - alert: RootDiskSpaceLow
+        expr: |
+          node_filesystem_avail_bytes{server="prod1", mountpoint="/", fstype!~"tmpfs|overlay"}
+          /
+          node_filesystem_size_bytes{server="prod1", mountpoint="/", fstype!~"tmpfs|overlay"}
+          < 0.15
+        for: 10m
+        labels:
+          severity: warning
+          service: infrastructure
+          server: prod1
+        annotations:
+          summary: "prod1 root disk has less than 15% free space"
+          description: "Low free space persisted for 10 minutes."
+
+      - alert: CertificateExpiringSoon
+        expr: |
+          (
+            probe_ssl_earliest_cert_expiry{job="blackbox-http", service="trajetico-web"}
+            - time()
+          ) < 14 * 24 * 60 * 60
+        for: 10m
+        labels:
+          severity: warning
+          service: trajetico-web
+        annotations:
+          summary: "trajetico.com TLS certificate expires in under 14 days"
+          description: "Renew the HTTPS certificate before it expires."

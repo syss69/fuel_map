@@ -1,0 +1,31 @@
+- name: Prepare the staging host
+  hosts: staging
+  become: true
+
+  vars:
+    app_user: trajetico
+    app_repository: https://github.com/syss69/fuel_map.git
+    app_directory: "/home/{{ app_user }}/apps/fuel_map"
+
+  tasks:
+    - name: Install Git
+      ansible.builtin.apt:
+        name: git
+        state: present
+        update_cache: true
+
+    - name: Create application parent directory
+      ansible.builtin.file:
+        path: "/home/{{ app_user }}/apps"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: "0755"
+
+    - name: Clone / update application repository
+      ansible.builtin.git:
+        repo: "{{ app_repository }}"
+        dest: "{{ app_directory }}"
+        version: main
+        update: true
+      become_user: "{{ app_user }}"

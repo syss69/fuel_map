@@ -1,8 +1,8 @@
 ---
 - name: Bootstrap Ansible management user
-  hosts: monitoring
+  hosts: "{{ bootstrap_target }}"
   gather_facts: false
-  become: false
+  become: true
 
   vars:
     bootstrap_user: trajetico
