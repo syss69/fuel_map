@@ -4,4 +4,10 @@ dist-cli/
 .env
 *.tsbuildinfo
 .vite/
+# Ansible inventory
 /infra/ansible/inventory/hosts.yml
+# Terraform local files
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
