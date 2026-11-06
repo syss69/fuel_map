@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write
 
 jobs:
   publish:  
@@ -44,9 +45,30 @@ jobs:
           push: true
           tags: ghcr.io/syss69/fuel-map-web:${{ github.event.workflow_run.head_sha }}
 
+  start_staging:
+    name: Start EC2
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Authentificate to AWS via OIDC
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_STAGING_CONTROL_ROLE_ARN }}
+          aws-region: eu-north-1
+          allowed-account-ids: "421247849651"
+
+      - name: Start staging instance
+        env:
+          STAGING_INSTANCE_ID: ${{ vars.STAGING_INSTANCE_ID }}
+        run: |
+          aws ec2 start-instances --instance-ids "$STAGING_INSTANCE_ID"
+          aws ec2 wait instance-status-ok --instance-ids "$STAGING_INSTANCE_ID"
+
   deploy_staging:
     name: deploy to staging server
-    needs: publish
+    needs: start_staging
     runs-on: ubuntu-latest
 
     concurrency:
@@ -169,3 +191,25 @@ jobs:
 
           echo "Website did not become available in time."
           exit 1
+
+  stop_staging:
+    name: Stop staging EC2
+    needs: [start_staging, deploy_staging, deploy_production]
+    if: ${{ always() && needs.start_staging.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Authentificate to AWS via OIDC
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_STAGING_CONTROL_ROLE_ARN }}
+          aws-region: eu-north-1
+          allowed-account-ids: "421247849651"
+        
+      - name: Stop staging instance
+        env:
+          STAGING_INSTANCE_ID: ${{ vars.STAGING_INSTANCE_ID }}
+        run: |
+          aws ec2 stop-instances --instance-ids "$STAGING_INSTANCE_ID"
+          aws ec2 wait instance-stopped --instance-ids "$STAGING_INSTANCE_ID"
