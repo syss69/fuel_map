@@ -55,7 +55,7 @@ jobs:
       - name: Authentificate to AWS via OIDC
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ vars.AWS_STAGING_CONTROLE_ROLE_ARN }}
+          role-to-assume: arn:aws:iam::421247849651:role/trajetico-github-staging-control #${{ vars.AWS_STAGING_CONTROL_ROLE_ARN }}
           aws-region: eu-north-1
           allowed-account-ids: "421247849651"
 
@@ -225,7 +225,7 @@ jobs:
       - name: Authentificate to AWS via OIDC
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ vars.AWS_STAGING_CONTROLE_ROLE_ARN }}
+          role-to-assume: arn:aws:iam::421247849651:role/trajetico-github-staging-control #${{ vars.AWS_STAGING_CONTROL_ROLE_ARN }}
           aws-region: eu-north-1
           allowed-account-ids: "421247849651"
         
