@@ -41,7 +41,7 @@ export default function Landing() {
       <section className="landing-hero">
         <p className="landing-eyebrow"><span className="landing-live-dot" /> LE CARBURANT DANS LE 40, LE 64 ET LE 65</p>
         <h1>Votre essence moins chère<br /><em>autour de vous.</em></h1>
-        <p className="landing-intro">Trajetico réunit les prix et la disponibilité officiels des carburants et les informations récentes de la communauté pour vous aider à choisir votre station.</p>
+        <p className="landing-intro">KAMIKAZE ❤ réunit les prix et la disponibilité officiels des carburants et les informations récentes de la communauté pour vous aider à choisir votre station.</p>
         <div className="landing-actions"><a className="landing-primary" href="/app">Ouvrir la carte <Arrow /></a><a className="landing-secondary" href="/notifications">Découvrir les alertes <span aria-hidden="true">↗</span></a></div>
         <p className="landing-area">Landes (40) · Pyrénées-Atlantiques (64) · Hautes-Pyrénées (65)</p>
       </section>
